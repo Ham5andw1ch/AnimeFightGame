@@ -1,21 +1,27 @@
 #include <stdio.h>
 #include <stdint.h>
+	int bufferLength;
+    
+		uint8_t** p1Buffer;
 
-    uint8_t p1Buffer[30][8];
     int head, tail;
 	int main(){
-
+		p1Buffer = malloc(30 * sizeof(*p1Buffer));
+		for(int i = 0; i < 10; ++i)
+		{
+    		p1Buffer[i] = malloc(8 * sizeof(**p1Buffer));
+		}
 	}
 	void add(uint8_t inputs[]){
-		if(p1Buffer[head] != null){
-			if(mod((head-1),p1Buffer.Length) ==tail){
+		if(p1Buffer[head] != NULL){
+			if(mod((head-1),bufferLength) ==tail){
 				
 				p1Buffer[tail] = inputs;
-				tail = mod((tail-1),queue.Length);
-				head = mod((head-1),queue.Length);
+				tail = mod((tail-1),bufferLength);
+				head = mod((head-1),bufferLength);
 			}else{
 				p1Buffer[head-1] = inputs;
-				head = mod((head-1),p1Buffer.Length);
+				head = mod((head-1),bufferLength);
 			}
 			
 		}else{
@@ -28,7 +34,7 @@
 	uint8_t[] remove(){
 		uint8_t[] temp = p1Buffer[head];
 		p1Buffer[head] = null;
-		head = mod((head+1),p1Buffer.Length);
+		head = mod((head+1),bufferLength);
 		return temp;
 	}
 	uint8_t[] peek(){
@@ -38,7 +44,7 @@
 	void removeTail(){
 		if(p1Buffer[tail] != null){
 		p1Buffer[tail] = null;
-		tail = mod((tail-1),p1Buffer.Length);
+		tail = mod((tail-1),bufferLength);
 		}
 	}
 	int mod(int x, int m) {
