@@ -16,6 +16,9 @@
 *.gch
 *.pch
 
+# Copied Headers
+include/
+
 # Libraries
 *.lib
 *.a

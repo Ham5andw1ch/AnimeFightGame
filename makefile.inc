@@ -1,8 +1,9 @@
 GCC = gcc
 WORKDIR = $(TOP_DIR)
 OBJ_DIR = $(WORKDIR)/build
+INC_DIR = $(WORKDIR)/include
 
-CFLAGS = -g $(shell sdl2-config --cflags)
+CFLAGS = -g $(shell sdl2-config --cflags) -I$(INC_DIR)
 LFLAGS = $(shell sdl2-config --libs) -lm
 
 %.o: %.c
@@ -12,6 +13,10 @@ LFLAGS = $(shell sdl2-config --libs) -lm
 $(SUBDIRS):
 	$(MAKE) -C $@ all
 
-.PHONY: $(SUBDIRS) all
+.PHONY: $(SUBDIRS) all includes
 
-all: $(OBS) $(SUBDIRS)
+all: includes $(OBS) $(SUBDIRS)
+
+includes:
+	@if [ ! -d $(INC_DIR) ]; then mkdir $(INC_DIR); fi
+	@if [ -e *.h ]; then cp -f *.h $(INC_DIR); fi
