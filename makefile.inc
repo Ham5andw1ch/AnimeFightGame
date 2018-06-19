@@ -3,7 +3,7 @@ WORKDIR = $(TOP_DIR)
 OBJ_DIR = $(WORKDIR)/build
 INC_DIR = $(WORKDIR)/include
 
-CFLAGS = -g $(shell sdl2-config --cflags) -I$(INC_DIR)
+CFLAGS = -g $(shell sdl2-config --cflags) -I$(INC_DIR) -DDEBUG_
 LFLAGS = $(shell sdl2-config --libs) -lm
 
 %.o: %.c
