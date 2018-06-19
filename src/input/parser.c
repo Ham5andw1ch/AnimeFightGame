@@ -1,17 +1,29 @@
 #include <stdio.h>
 #include <stdint.h>
-	int bufferLength;
-    
-		uint8_t** p1Buffer;
+#include <settings.h>
+	
+	
+    uint8_t** p1Buffer;
+    uint8_t** p2Buffer;
 
     int head, tail;
-	int main(){
-		p1Buffer = malloc(30 * sizeof(*p1Buffer));
+	
+	//Initialize Buffers
+	void initBuffers(){
+		//Player 1 2D array of Byte Strings
+		p1Buffer = malloc(bufferLength * sizeof(*p1Buffer));
 		for(int i = 0; i < 10; ++i)
 		{
-    		p1Buffer[i] = malloc(8 * sizeof(**p1Buffer));
+    		p1Buffer[i] = malloc(bufferTolerance * sizeof(**p1Buffer));
+		}
+		//Player 2 2D array of Byte Strings
+		p2Buffer = malloc(bufferLength * sizeof(*p2Buffer));
+		for(int i = 0; i < 10; ++i)
+		{
+    		p2Buffer[i] = malloc(bufferTolerance * sizeof(**p2Buffer));
 		}
 	}
+
 	void add(uint8_t inputs[]){
 		if(p1Buffer[head] != NULL){
 			if(mod((head-1),bufferLength) ==tail){
