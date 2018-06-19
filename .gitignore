@@ -57,3 +57,4 @@ dkms.conf
 
 # SQLite Databases
 *.db
+.vscode/settings.json

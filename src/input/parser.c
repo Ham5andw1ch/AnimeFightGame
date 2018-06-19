@@ -3,42 +3,46 @@
 #include <settings.h>
 	
 	
-    uint8_t** p1Buffer;
-    uint8_t** p2Buffer;
-
-    int head, tail;
+    typedef struct
+	{
+    	int head;
+    	int tail;
+    	uint8_t *inputs[bufferLength];
+	} buffer_t;
+	buffer_t Buffers[2];
 	
 	//Initialize Buffers
-	void initBuffers(){
-		//Player 1 2D array of Byte Strings
-		p1Buffer = malloc(bufferLength * sizeof(*p1Buffer));
-		for(int i = 0; i < 10; ++i)
-		{
-    		p1Buffer[i] = malloc(bufferTolerance * sizeof(**p1Buffer));
-		}
-		//Player 2 2D array of Byte Strings
-		p2Buffer = malloc(bufferLength * sizeof(*p2Buffer));
-		for(int i = 0; i < 10; ++i)
-		{
-    		p2Buffer[i] = malloc(bufferTolerance * sizeof(**p2Buffer));
-		}
+	void initBuffers()
+	{
+	    Buffers[0].head = 0;
+	    Buffers[1].head = 0;
+	    Buffers[0].tail = 0;
+	    Buffers[1].tail = 0;
 	}
 
-	void add(uint8_t inputs[]){
-		if(p1Buffer[head] != NULL){
+	void destroyBuffers()
+	{
+		free(Buffers[0]);
+		free(Buffers[1]);
+	}
+
+	void add(uint8_t inputs[], uint8_t player){
+		
+
+		if(currentBuffer[head] != NULL){
 			if(mod((head-1),bufferLength) ==tail){
 				
-				p1Buffer[tail] = inputs;
+				currentBuffer[tail] = inputs;
 				tail = mod((tail-1),bufferLength);
 				head = mod((head-1),bufferLength);
+
 			}else{
-				p1Buffer[head-1] = inputs;
+				currentBuffer[head-1] = inputs;
 				head = mod((head-1),bufferLength);
 			}
 			
 		}else{
-			
-			p1Buffer[head] = inputs;
+			currentBuffer[head] = inputs;
 			tail = head;
 		}	
 	}
