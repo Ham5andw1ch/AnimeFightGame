@@ -15,8 +15,4 @@ $(SUBDIRS):
 
 .PHONY: $(SUBDIRS) all includes
 
-all: includes $(OBS) $(SUBDIRS)
-
-includes:
-	@if [ ! -d $(INC_DIR) ]; then mkdir $(INC_DIR); fi
-	@if [ -e *.h ]; then cp -f *.h $(INC_DIR); fi
+all: $(OBS) $(SUBDIRS)
