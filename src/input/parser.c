@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <settings.h>
+#include "settings.h"
 	
 	
     typedef struct
