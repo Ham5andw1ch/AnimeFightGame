@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include "global.h"
 #include "joyState.h"
+#include "parser.h"
 
 void printEventTypes()
 {
@@ -134,6 +135,7 @@ int main(int argc, char **argv)
 
     while(1)
     {
+        parserUpdate();
         joyUpdate();
         SDL_Event e;
         if(SDL_PollEvent(&e))

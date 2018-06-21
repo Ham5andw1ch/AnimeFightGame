@@ -271,10 +271,10 @@ void joyUpdate()
             joystatep2[i] = (joystatep2[i] + 1) % 4;
     }
 
-    dbgprint("[%d %d %d %d %d %d %d %d]\t", joystatep1[0], joystatep1[1], joystatep1[2],
-            joystatep1[3], joystatep1[4], joystatep1[5], joystatep1[6], joystatep1[7]); 
-    dbgprint("[%d %d %d %d %d %d %d %d]\n", joystatep2[0], joystatep2[1], joystatep2[2],
-            joystatep2[3], joystatep2[4], joystatep2[5], joystatep2[6], joystatep2[7]); 
+    //dbgprint("[%d %d %d %d %d %d %d %d]\t", joystatep1[0], joystatep1[1], joystatep1[2],
+    //        joystatep1[3], joystatep1[4], joystatep1[5], joystatep1[6], joystatep1[7]); 
+    //dbgprint("[%d %d %d %d %d %d %d %d]\n", joystatep2[0], joystatep2[1], joystatep2[2],
+    //        joystatep2[3], joystatep2[4], joystatep2[5], joystatep2[6], joystatep2[7]); 
 }
 
 void joyEvent(SDL_Event e)
