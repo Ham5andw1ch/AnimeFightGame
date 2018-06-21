@@ -30,7 +30,6 @@
 
 	void destroyBuffers()
 	{
-		free(Buffers);
 	}
 
 	void add(uint8_t inputs[], buffer_t player){
@@ -54,15 +53,15 @@
 		}	
 	}
 
-	uint8_t[] remove(){
-		uint8_t[] temp = p1Buffer[head];
-		p1Buffer[head] = null;
-		head = mod((head+1),bufferLength);
+	uint8_t* pop(buffer_t player){
+		uint8_t* temp = player.inputs[player.head];
+		player.inputs[player.head] = NULL;
+		player.head = mod((player.head+1),bufferLength);
 		return temp;
 	}
 	
-	uint8_t[] peek(buffer_t player){
-		uint8_t[] temp = player.infinity[player.head];
+	uint8_t* peek(buffer_t player){
+		uint8_t* temp = player.inputs[player.head];
 		return temp;
 	}
 	
