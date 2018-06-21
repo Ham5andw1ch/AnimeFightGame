@@ -3,7 +3,21 @@
 #include "global.h"
 #include "settings.h"
 
+#include "joyState.h"
+
+keybind testKeys[buttonCount] = {
+    { BIND_HAT, 0, 0, 1 },
+    { BIND_HAT, 0, 0, 4 },
+    { BIND_HAT, 0, 0, 8 },
+    { BIND_HAT, 0, 0, 2 },
+    { BIND_BUTTON, 0, 2, 0 },
+    { BIND_BUTTON, 0, 3, 0 },
+    { BIND_BUTTON, 0, 5, 0 },
+    { BIND_BUTTON, 0, 0, 0 },
+};
+
 SDL_Joystick *joystick[MaxJoysticks];
+uint8_t joystate[buttonCount];
 
 int addJoy(int index)
 {
@@ -59,12 +73,30 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
     {
         dbgprint("%d: Button %d down on Joystick %d: %d\n", jbutton->timestamp,
                 jbutton->button, jbutton->which, jbutton->state);
+
+        for(int i = 0; i < buttonCount; ++i)
+        {
+            if(testKeys[i].type != BIND_BUTTON) continue;
+            if(testKeys[i].joy != jbutton->which) continue;
+            if(testKeys[i].ind != jbutton->button) continue;
+            joystate[i] = 1; break;
+        }
     }
     else
     {
         dbgprint("%d: Button %d up on Joystick %d: %d\n", jbutton->timestamp,
                 jbutton->button, jbutton->which, jbutton->state);
+
+        for(int i = 0; i < buttonCount; ++i)
+        {
+            if(testKeys[i].type != BIND_BUTTON) continue;
+            if(testKeys[i].joy != jbutton->which) continue;
+            if(testKeys[i].ind != jbutton->button) continue;
+            joystate[i] = 3; break;
+        }
     }
+    dbgprint("[%d %d %d %d %d %d %d %d]\n", joystate[0], joystate[1], joystate[2],
+            joystate[3], joystate[4], joystate[5], joystate[6], joystate[7]); 
     return 0;
 }
 
@@ -87,6 +119,20 @@ int updateStateHat(SDL_JoyHatEvent* jhat)
 {
     dbgprint("%d: POV Hat %d on Joystick %d: %d\n", jhat->timestamp,
             jhat->hat, jhat->which, jhat->value);
+    for(int i = 0; i < buttonCount; ++i)
+    {
+        if(testKeys[i].type != BIND_HAT) continue;
+        if(testKeys[i].joy != jhat->which) continue;
+        if(testKeys[i].ind != jhat->hat) continue;
+//      dbgprint("testKeys[%d].threshold(%d) & jhat->value(%d) = %d\n", i,
+//              testKeys[i].threshold, jhat->value, testKeys[i].threshold & jhat->value);
+        if((testKeys[i].threshold & jhat->value) > 0)
+            joystate[i] = joystate[i] == 0 ? 1 : 2;
+        else
+            joystate[i] = joystate[i] == 2 ? 3 : 0;
+    }
+    dbgprint("[%d %d %d %d %d %d %d %d]\n", joystate[0], joystate[1], joystate[2],
+            joystate[3], joystate[4], joystate[5], joystate[6], joystate[7]); 
     return 0;
 }
 
@@ -105,15 +151,25 @@ int updateStateKey(SDL_KeyboardEvent* key)
 
 void joyInit()
 {
-    for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
-    {
-        dbgprint("Joystick %d Added\n", i);
-        addJoy(i);
-    }
+//  for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
+//  {
+//      dbgprint("Joystick %d Added\n", i);
+//      addJoy(i);
+//  }
+
+    memset(joystick, NULL, MaxJoysticks);
+    memset(joystate, 0, buttonCount);
 }
 
 void joyUpdate(SDL_Event e)
 {
+    // Remove the one-frame button states
+    for(int i = 0; i < buttonCount; ++i)
+    {
+        if(joystate[i] % 2 == 1)
+            joystate[i] = (joystate[i] + 1) % 4;
+    }
+
     if(e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
         updateStateKey(&e.key);
     if(e.type == SDL_JOYAXISMOTION)
