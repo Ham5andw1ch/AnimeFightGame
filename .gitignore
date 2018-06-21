@@ -58,6 +58,6 @@ dkms.conf
 # SQLite Databases
 *.db
 
-# IDE Junk
-/willDeleteLater/
+#IDE Junk
+willDeleteLater/
 .vscode/
