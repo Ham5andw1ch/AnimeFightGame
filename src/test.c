@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "SDL.h"
 #include "global.h"
+#include "joyState.h"
 
 void printEventTypes()
 {
@@ -67,65 +68,65 @@ void printEventTypes()
 }
 
 //fish
-SDL_Joystick *joysticks[50];
-int nextJoy = 0;
-
-int joystickWatch(void* userdata, SDL_Event* event)
-{
-    switch(event->type)
-    {
-    case SDL_JOYAXISMOTION:
-        dbgprint("%d: Axis %d on Joystick %d: %d\n", event->jaxis.timestamp,
-                event->jaxis.axis, event->jaxis.which, event->jaxis.value);
-        break;
-    case SDL_JOYBALLMOTION:
-        dbgprint("%d: Trackball %d on Joystick %d: (%d, %d)\n", event->jball.timestamp,
-                event->jball.ball, event->jball.which, event->jball.xrel,
-                event->jball.yrel);
-        break;
-    case SDL_JOYHATMOTION:
-        dbgprint("%d: POV Hat %d on Joystick %d: %d\n", event->jhat.timestamp,
-                event->jhat.hat, event->jhat.which, event->jhat.value);
-        break;
-    case SDL_JOYBUTTONDOWN:
-        dbgprint("%d: Button %d down on Joystick %d: %d\n", event->jbutton.timestamp,
-                event->jbutton.button, event->jbutton.which, event->jbutton.state);
-        break;
-    case SDL_JOYBUTTONUP:
-        dbgprint("%d: Button %d up on Joystick %d: %d\n", event->jbutton.timestamp,
-                event->jbutton.button, event->jbutton.which, event->jbutton.state);
-        break;
-    case SDL_JOYDEVICEADDED:
-        dbgprint("Joystick %d Added\n", event->jdevice.which);
-        joysticks[nextJoy++] = SDL_JoystickOpen(event->jdevice.which);
-        break;
-    case SDL_JOYDEVICEREMOVED:
-        dbgprint("Joystick %d Removed\n", event->jdevice.which);
-        SDL_JoystickClose(SDL_JoystickFromInstanceID(event->jdevice.which));
-        joysticks[event->jdevice.which] = NULL;
-        break;
-    }
-}
+//SDL_Joystick *joysticks[50];
+//int nextJoy = 0;
+//
+//int joystickWatch(void* userdata, SDL_Event* event)
+//{
+//    switch(event->type)
+//    {
+//    case SDL_JOYAXISMOTION:
+//        dbgprint("%d: Axis %d on Joystick %d: %d\n", event->jaxis.timestamp,
+//                event->jaxis.axis, event->jaxis.which, event->jaxis.value);
+//        break;
+//    case SDL_JOYBALLMOTION:
+//        dbgprint("%d: Trackball %d on Joystick %d: (%d, %d)\n", event->jball.timestamp,
+//                event->jball.ball, event->jball.which, event->jball.xrel,
+//                event->jball.yrel);
+//        break;
+//    case SDL_JOYHATMOTION:
+//        dbgprint("%d: POV Hat %d on Joystick %d: %d\n", event->jhat.timestamp,
+//                event->jhat.hat, event->jhat.which, event->jhat.value);
+//        break;
+//    case SDL_JOYBUTTONDOWN:
+//        dbgprint("%d: Button %d down on Joystick %d: %d\n", event->jbutton.timestamp,
+//                event->jbutton.button, event->jbutton.which, event->jbutton.state);
+//        break;
+//    case SDL_JOYBUTTONUP:
+//        dbgprint("%d: Button %d up on Joystick %d: %d\n", event->jbutton.timestamp,
+//                event->jbutton.button, event->jbutton.which, event->jbutton.state);
+//        break;
+//    case SDL_JOYDEVICEADDED:
+//        dbgprint("Joystick %d Added\n", event->jdevice.which);
+//        joysticks[nextJoy++] = SDL_JoystickOpen(event->jdevice.which);
+//        break;
+//    case SDL_JOYDEVICEREMOVED:
+//        dbgprint("Joystick %d Removed\n", event->jdevice.which);
+//        SDL_JoystickClose(SDL_JoystickFromInstanceID(event->jdevice.which));
+//        joysticks[event->jdevice.which] = NULL;
+//        break;
+//    }
+//}
 
 int main()
 {
-    if(SDL_Init(SDL_INIT_GAMECONTROLLER))
+    if(SDL_Init(SDL_INIT_JOYSTICK))
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Unable to initialize SDL: %s", SDL_GetError());
         return 1;
     }
 
-    for(int i = 0; i < SDL_NumJoysticks(); ++i)
-    {
-        dbgprint("Joystick %d Added\n", i);
-        if(!(joysticks[nextJoy++] = SDL_JoystickOpen(i)))
-        {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't open Joystick %d: %s\n", i,
-                    SDL_GetError());
-        }
-    }
+//  for(int i = 0; i < SDL_NumJoysticks(); ++i)
+//  {
+//      dbgprint("Joystick %d Added\n", i);
+//      if(!(joysticks[nextJoy++] = SDL_JoystickOpen(i)))
+//      {
+//          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't open Joystick %d: %s\n", i,
+//                  SDL_GetError());
+//      }
+//  }
 
-    SDL_AddEventWatch(joystickWatch, NULL);
+//  SDL_AddEventWatch(joystickWatch, NULL);
 
 //  printEventTypes();
 
@@ -137,18 +138,29 @@ int main()
 //          dbgprint("Event Type %d\n", e.type);
             if(e.type == SDL_QUIT)
                 break;
-
+            if(e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
+                updateStateKey(&e.key);
+            if(e.type == SDL_JOYAXISMOTION)
+                updateStateAxi(&e.jaxis);
+            if(e.type == SDL_JOYBALLMOTION)
+                updateStateBal(&e.jball);
+            if(e.type == SDL_JOYHATMOTION)
+                updateStateHat(&e.jhat);
+            if(e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
+                updateStateBut(&e.jbutton);
+            if(e.type == SDL_JOYDEVICEADDED || e.type == SDL_JOYDEVICEREMOVED)
+                updateStateDev(&e.jdevice);
         }
     }
 
-    for(int i = 0; i < nextJoy; ++i)
-    {
-        if(joysticks[i] != NULL && SDL_JoystickGetAttached(joysticks[i]))
-        {
-            dbgprint("Joystick %d Removed\n", SDL_JoystickInstanceID(joysticks[i]));
-            SDL_JoystickClose(joysticks[i]);
-        }
-    }
+//  for(int i = 0; i < nextJoy; ++i)
+//  {
+//      if(joysticks[i] != NULL && SDL_JoystickGetAttached(joysticks[i]))
+//      {
+//          dbgprint("Joystick %d Removed\n", SDL_JoystickInstanceID(joysticks[i]));
+//          SDL_JoystickClose(joysticks[i]);
+//      }
+//  }
 
     SDL_Quit();
 }
