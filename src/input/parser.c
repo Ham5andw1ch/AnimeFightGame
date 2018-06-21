@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <settings.h>
 	
 	
@@ -10,7 +11,14 @@
     	uint8_t *inputs[bufferLength];
 	} buffer_t;
 	buffer_t Buffers[2];
-	
+	int mod(int x, int m) {
+    	int r = x%m;
+		if(r<0){
+			return r+m;
+		}else{
+			return r;
+		}
+	}
 	//Initialize Buffers
 	void initBuffers()
 	{
@@ -22,28 +30,27 @@
 
 	void destroyBuffers()
 	{
-		free(Buffers[0]);
-		free(Buffers[1]);
+		free(Buffers);
 	}
 
-	void add(uint8_t inputs[], uint8_t player){
+	void add(uint8_t inputs[], buffer_t player){
 		
-
-		if(currentBuffer[head] != NULL){
-			if(mod((head-1),bufferLength) ==tail){
+		if(player.inputs[player.head] != NULL){
+			
+			if(mod((player.head-1),bufferLength) ==player.tail){
 				
-				currentBuffer[tail] = inputs;
-				tail = mod((tail-1),bufferLength);
-				head = mod((head-1),bufferLength);
+				player.inputs[player.tail] = inputs;
+				player.tail = mod((player.tail-1),bufferLength);
+				player.head = mod((player.head-1),bufferLength);
 
 			}else{
-				currentBuffer[head-1] = inputs;
-				head = mod((head-1),bufferLength);
+				player.inputs[player.head-1] = inputs;
+				player.head = mod((player.head-1),bufferLength);
 			}
 			
 		}else{
-			currentBuffer[head] = inputs;
-			tail = head;
+			player.inputs[player.head] = inputs;
+			player.tail = player.head;
 		}	
 	}
 
@@ -53,23 +60,19 @@
 		head = mod((head+1),bufferLength);
 		return temp;
 	}
-	uint8_t[] peek(){
-		uint8_t[] temp = p1Buffer[head];
+	
+	uint8_t[] peek(buffer_t player){
+		uint8_t[] temp = player.infinity[player.head];
 		return temp;
 	}
-	void removeTail(){
-		if(p1Buffer[tail] != null){
-		p1Buffer[tail] = null;
-		tail = mod((tail-1),bufferLength);
+	
+	void removeTail(buffer_t player){
+		if(player.inputs[player.tail] != NULL){
+		player.inputs[player.tail] = NULL;
+		player.tail = mod((player.tail-1),bufferLength);
 		}
 	}
-	int mod(int x, int m) {
-    	int r = x%m;
-		if(r<0){
-			return r+m;
-		}else{
-			return r;
-		}
-	}
+	
+
 
 
