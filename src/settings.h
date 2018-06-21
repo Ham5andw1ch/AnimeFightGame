@@ -4,7 +4,7 @@
 #define MaxJoysticks 10
 
 #define bufferLength 30
-#define bufferTolerance = 3;
-#define const int buttonCount = 8;
+#define bufferTolerance 3
+#define buttonCount 8
 
 #endif
