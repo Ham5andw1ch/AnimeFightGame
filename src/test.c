@@ -116,6 +116,8 @@ int main()
         return 1;
     }
 
+    joyInit();
+
 //  for(int i = 0; i < SDL_NumJoysticks(); ++i)
 //  {
 //      dbgprint("Joystick %d Added\n", i);
@@ -138,20 +140,11 @@ int main()
 //          dbgprint("Event Type %d\n", e.type);
             if(e.type == SDL_QUIT)
                 break;
-            if(e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
-                updateStateKey(&e.key);
-            if(e.type == SDL_JOYAXISMOTION)
-                updateStateAxi(&e.jaxis);
-            if(e.type == SDL_JOYBALLMOTION)
-                updateStateBal(&e.jball);
-            if(e.type == SDL_JOYHATMOTION)
-                updateStateHat(&e.jhat);
-            if(e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
-                updateStateBut(&e.jbutton);
-            if(e.type == SDL_JOYDEVICEADDED || e.type == SDL_JOYDEVICEREMOVED)
-                updateStateDev(&e.jdevice);
+            joyUpdate(e);
         }
     }
+
+    joyRip();
 
 //  for(int i = 0; i < nextJoy; ++i)
 //  {
