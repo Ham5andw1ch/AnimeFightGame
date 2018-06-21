@@ -21,4 +21,7 @@ void joyUpdate();
 void joyEvent(SDL_Event);
 void joyRip();
 
+uint8_t* joyStatep1();
+uint8_t* joyStatep2();
+
 #endif
