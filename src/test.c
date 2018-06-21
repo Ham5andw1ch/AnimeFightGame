@@ -108,7 +108,7 @@ void printEventTypes()
 //    }
 //}
 
-int main()
+int main(int argc, char **argv)
 {
     if(SDL_Init(SDL_INIT_JOYSTICK))
     {
