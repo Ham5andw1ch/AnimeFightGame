@@ -16,11 +16,12 @@ int addJoy(int index)
             {
                 errprint("Couldn't open Joystick: %s\n", SDL_GetError());
                 SDL_ClearError();
-                return 1;
+                return 1; // SDL error
             }
             return 0;
         }
     }
+    return 2; // No more open spots
 }
 
 void remJoy(int index)
