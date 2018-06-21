@@ -134,13 +134,14 @@ int main()
 
     while(1)
     {
+        joyUpdate();
         SDL_Event e;
         if(SDL_PollEvent(&e))
         {
 //          dbgprint("Event Type %d\n", e.type);
             if(e.type == SDL_QUIT)
                 break;
-            joyUpdate(e);
+            joyEvent(e);
         }
     }
 

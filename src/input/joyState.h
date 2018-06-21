@@ -5,7 +5,7 @@
 
 enum bindType
 {
-    BIND_KEYBOARD, BIND_AXIS, BIND_BUTTON, BIND_HAT, BIND_BALL
+    BIND_KEYBOARD, BIND_AXIS, BIND_BUTTON, BIND_HAT
 };
 
 typedef struct
@@ -17,7 +17,8 @@ typedef struct
 } keybind;
 
 void joyInit();
-void joyUpdate(SDL_Event);
+void joyUpdate();
+void joyEvent(SDL_Event);
 void joyRip();
 
 #endif
