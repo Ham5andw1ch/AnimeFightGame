@@ -71,7 +71,37 @@ void removeTail(buffer_t player){
 		player.tail = mod((player.tail-1),bufferLength);
 	}
 }
+//Input: uint8_t array with the first element being the length of the array, player input buffer
+uint8_t searchInput(uint8_t* input, buffer_t buffer){
+	int length = input[0]
+	int currentIndex = 1;
+	//Every possible joystick position in the game defined by a 2D array.
+	int Inputs[3][3] = {  
+   		{7,8,9} ,   
+		{4,5,6} ,   
+		{1,2,3}   
+	};
+	int yPos;
+	int xPos;
 
+	for (int i = buffer.head; i != buffer.tail; i= mod((i+1), bufferLength)){
+		yPos = 1;
+		xPos = 1;
+		if(inputs[i][0]==1||inputs[i][0]==2){
+			yPos++;
+		}
+		if(inputs[i][1]==1||inputs[i][1]==2){
+			yPos--;
+		}
+		if(inputs[i][2]==1||inputs[i][2]==2){
+			xPos--;
+		}
+		if(inputs[i][3]==1||inputs[i][3]==2){
+			xPos++;
+		}
+
+	}
+}
 void parserUpdate(){
 	add(joyStatep1(), Buffers[0]);
 	add(joyStatep2(), Buffers[1]);

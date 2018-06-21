@@ -6,5 +6,6 @@
 #define bufferLength 30
 #define bufferTolerance 3
 #define buttonCount 8
+#define fiveLimit 10
 
 #endif
