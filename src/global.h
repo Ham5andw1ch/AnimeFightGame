@@ -7,4 +7,10 @@
     #define dbgprint(...) do{}while(0)
 #endif
 
+#ifdef DEBUG_
+    #define errprint(...) fprintf(stderr, __VA_ARGS__)
+#else
+    #define errprint(...) do{}while(0)
+#endif
+
 #endif

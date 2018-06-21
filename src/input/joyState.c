@@ -2,8 +2,19 @@
 #include "SDL.h"
 #include "global.h"
 
-SDL_Joystick *joystick[10];
-int nextJoy = 0;
+SDL_Joystick *joystick[MaxJoysticks];
+int addJoy(int index)
+{
+    for(int i = 0; i < MaxJoysticks; ++i)
+    {
+        if(joystick[i] == NULL)
+        {
+            joystick[i] = SDL_JoystickOpen(index);
+            if(!joystick[i])
+                errprint("Couldn't open Joystick: %s\n", SDL_GetError());
+        }
+    }
+}
 
 int updateStateAxi(SDL_JoyAxisEvent* jaxis)
 {
