@@ -36,49 +36,49 @@ void initBuffers()
 void destroyBuffers()
 {
 }
-void add(uint8_t inputs[], buffer_t player)
+void add(uint8_t inputs[], buffer_t* player)
 {	
-	if(player.inputs[player.head] != NULL)
+	if(player->inputs[player->head] != NULL)
 	{	
-		if(mod((player.head-1),bufferLength) ==player.tail)
+		if(mod((player->head-1), bufferLength) == player->tail)
 		{			
-			player.inputs[player.tail] = inputs;
-			player.tail = mod((player.tail-1),bufferLength);
-			player.head = mod((player.head-1),bufferLength);
+			player->inputs[player->tail] = inputs;
+			player->tail = mod((player->tail-1),bufferLength);
+			player->head = mod((player->head-1),bufferLength);
 		}else
 		{
-			player.inputs[player.head-1] = inputs;
-			player.head = mod((player.head-1),bufferLength);
+			player->inputs[mod(player->head-1, bufferLength)] = inputs;
+			player->head = mod((player->head-1),bufferLength);
 		}
 		
 	}else
 	{
-		player.inputs[player.head] = inputs;
-		player.tail = player.head;
+		player->inputs[player->head] = inputs;
+		player->tail = player->head;
 	}	
 }
-uint8_t* pop(buffer_t player)
+uint8_t* pop(buffer_t* player)
 {
-	uint8_t* temp = player.inputs[player.head];
-	free(player.inputs[player.head]);
-	player.inputs[player.head] = NULL;
-	player.head = mod((player.head+1),bufferLength);
+	uint8_t* temp = player->inputs[player->head];
+	free(player->inputs[player->head]);
+	player->inputs[player->head] = NULL;
+	player->head = mod((player->head+1), bufferLength);
 	return temp;
 }
 
-uint8_t* peek(buffer_t player)
+uint8_t* peek(buffer_t* player)
 {
-	uint8_t* temp = player.inputs[player.head];
+	uint8_t* temp = player->inputs[player->head];
 	return temp;
 }
 
-void removeTail(buffer_t player)
+void removeTail(buffer_t* player)
 {
-	if(player.inputs[player.tail] != NULL)
+	if(player->inputs[player->tail] != NULL)
 	{
-		free(player.inputs[player.tail]);
-		player.inputs[player.tail] = NULL;
-		player.tail = mod((player.tail-1),bufferLength);
+		free(player->inputs[player->tail]);
+		player->inputs[player->tail] = NULL;
+		player->tail = mod((player->tail-1),bufferLength);
 	}
 }
 //Input: uint8_t array of an input in anime notation with the first element being the length of the input, player input buffer
@@ -153,13 +153,13 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 //My update function.
 void parserUpdate()
 {
-	add(joyStatep1(), Buffers[0]);
-	add(joyStatep2(), Buffers[1]);
+	add(joyStatep1(), &Buffers[0]);
+	add(joyStatep2(), &Buffers[1]);
 	uint8_t testInput[] = {3,2,3,6};
-	dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Buffers[0])[0], peek(Buffers[0])[1], peek(Buffers[0])[2],
-            peek(Buffers[0])[3], peek(Buffers[0])[4], peek(Buffers[0])[5], peek(Buffers[0])[6], peek(Buffers[0])[7]); 
-    dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Buffers[1])[0], peek(Buffers[1])[1], peek(Buffers[1])[2],
-            peek(Buffers[1])[3], peek(Buffers[1])[4], peek(Buffers[1])[5], peek(Buffers[1])[6], peek(Buffers[1])[7]); 
+	dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Buffers)[0], peek(Buffers)[1], peek(Buffers)[2],
+            peek(Buffers)[3], peek(Buffers)[4], peek(Buffers)[5], peek(Buffers)[6], peek(Buffers)[7]); 
+    dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Buffers + 1)[0], peek(Buffers + 1)[1], peek(Buffers + 1)[2],
+            peek(Buffers + 1)[3], peek(Buffers + 1)[4], peek(Buffers + 1)[5], peek(Buffers + 1)[6], peek(Buffers + 1)[7]); 
 	
 	if(searchInput(testInput, Buffers[0], 1))
 		printf("%s","true\n");
