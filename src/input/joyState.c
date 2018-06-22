@@ -132,14 +132,14 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
             if(keysP1[i].type != BIND_BUTTON) continue;
             if(keysP1[i].joy != jbutton->which) continue;
             if(keysP1[i].ind != jbutton->button) continue;
-            joystatep1[i] = 1; break;
+            joystatep1[i] = 1;
         }
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP2[i].type != BIND_BUTTON) continue;
             if(keysP2[i].joy != jbutton->which) continue;
             if(keysP2[i].ind != jbutton->button) continue;
-            joystatep2[i] = 1; break;
+            joystatep2[i] = 1;
         }
     }
     else
@@ -152,14 +152,14 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
             if(keysP1[i].type != BIND_BUTTON) continue;
             if(keysP1[i].joy != jbutton->which) continue;
             if(keysP1[i].ind != jbutton->button) continue;
-            joystatep1[i] = 3; break;
+            joystatep1[i] = 3;
         }
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP2[i].type != BIND_BUTTON) continue;
             if(keysP2[i].joy != jbutton->which) continue;
             if(keysP2[i].ind != jbutton->button) continue;
-            joystatep2[i] = 3; break;
+            joystatep2[i] = 3;
         }
     }
     return 0;
@@ -217,14 +217,14 @@ int updateStateKey(SDL_KeyboardEvent* key)
         {
             if(keysP1[i].type != BIND_KEYBOARD) continue;
             if(keysP1[i].ind != key->keysym.sym) continue;
-            joystatep1[i] = 1; break;
+            joystatep1[i] = 1;
         }
 
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP2[i].type != BIND_KEYBOARD) continue;
             if(keysP2[i].ind != key->keysym.sym) continue;
-            joystatep2[i] = 1; break;
+            joystatep2[i] = 1;
         }
     }
     else
@@ -234,14 +234,14 @@ int updateStateKey(SDL_KeyboardEvent* key)
         {
             if(keysP1[i].type != BIND_KEYBOARD) continue;
             if(keysP1[i].ind != key->keysym.sym) continue;
-            joystatep1[i] = 3; break;
+            joystatep1[i] = 3;
         }
 
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP2[i].type != BIND_KEYBOARD) continue;
             if(keysP2[i].ind != key->keysym.sym) continue;
-            joystatep2[i] = 3; break;
+            joystatep2[i] = 3;
         }
     }
     return 0;
