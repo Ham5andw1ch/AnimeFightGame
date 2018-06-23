@@ -74,8 +74,8 @@ void remJoy(int index)
 
 int updateStateAxi(SDL_JoyAxisEvent* jaxis)
 {
-    dbgprint("%d: Axis %d on Joystick %d: %d\n", jaxis->timestamp,
-            jaxis->axis, jaxis->which, jaxis->value);
+  //  dbgprint("%d: Axis %d on Joystick %d: %d\n", jaxis->timestamp,
+  //          jaxis->axis, jaxis->which, jaxis->value);
     for(int i = 0; i < buttonCount; ++i)
     {
         if(keysP1[i].type != BIND_AXIS) continue;
@@ -124,8 +124,8 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
 {
     if(jbutton->type == SDL_JOYBUTTONDOWN)
     {
-        dbgprint("%d: Button %d down on Joystick %d: %d\n", jbutton->timestamp,
-                jbutton->button, jbutton->which, jbutton->state);
+      //  dbgprint("%d: Button %d down on Joystick %d: %d\n", jbutton->timestamp,
+      //          jbutton->button, jbutton->which, jbutton->state);
 
         for(int i = 0; i < buttonCount; ++i)
         {
@@ -144,8 +144,8 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
     }
     else
     {
-        dbgprint("%d: Button %d up on Joystick %d: %d\n", jbutton->timestamp,
-                jbutton->button, jbutton->which, jbutton->state);
+       // dbgprint("%d: Button %d up on Joystick %d: %d\n", jbutton->timestamp,
+    //            jbutton->button, jbutton->which, jbutton->state);
 
         for(int i = 0; i < buttonCount; ++i)
         {
@@ -182,8 +182,8 @@ int updateStateDev(SDL_JoyDeviceEvent* jdevice)
 
 int updateStateHat(SDL_JoyHatEvent* jhat)
 {
-    dbgprint("%d: POV Hat %d on Joystick %d: %d\n", jhat->timestamp,
-            jhat->hat, jhat->which, jhat->value);
+ //   dbgprint("%d: POV Hat %d on Joystick %d: %d\n", jhat->timestamp,
+   //         jhat->hat, jhat->which, jhat->value);
     for(int i = 0; i < buttonCount; ++i)
     {
         if(keysP1[i].type != BIND_HAT) continue;
@@ -212,7 +212,7 @@ int updateStateKey(SDL_KeyboardEvent* key)
 {
     if(key->type == SDL_KEYDOWN)
     {
-        dbgprint("%d: %s key pressed\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
+      //  dbgprint("%d: %s key pressed\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP1[i].type != BIND_KEYBOARD) continue;
@@ -229,7 +229,7 @@ int updateStateKey(SDL_KeyboardEvent* key)
     }
     else
     {
-        dbgprint("%d: %s key released\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
+       // dbgprint("%d: %s key released\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP1[i].type != BIND_KEYBOARD) continue;

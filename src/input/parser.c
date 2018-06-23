@@ -12,7 +12,7 @@ typedef struct
 	int tail;
 	uint8_t *inputs[bufferLength];
 } buffer_t;
-
+uint8_t updateFlag = 0;
 buffer_t Buffers[2];
 int mod(int x, int m)
 {
@@ -89,6 +89,7 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 	int yPos;
 	int xPos;
 	int fiveCount;
+	int savedI;
 	//Every possible joystick position in the game defined by a 2D array.
 	int possibleInputs[3][3] = 
 	{  
@@ -98,7 +99,7 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 	};
 	
 	//Scan the entire buffer
-	for (int i = buffer.tail; i != buffer.head; i= mod((i-1), bufferLength))
+	for (int i = buffer.head; i != buffer.tail; i= mod((i+1), bufferLength))
 	{
 		if(buffer.inputs[i][buttonCount+1] == 1 && !flag)
 		{
@@ -110,11 +111,11 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 			xPos = 1;
 			if(buffer.inputs[i][0]==1||buffer.inputs[i][0]==2)
 			{
-				yPos++;
+				yPos--;
 			}
 			if(buffer.inputs[i][1]==1||buffer.inputs[i][1]==2)
 			{
-				yPos--;
+				yPos++;
 			}
 			if(buffer.inputs[i][2]==1||buffer.inputs[i][2]==2)
 			{
@@ -125,6 +126,7 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 				xPos++;
 			}
 			//Give up on the input if more than fiveLimit fives are consecutive *unless* that five is required by the input. 
+			dbgprint("[%d %d %d]", possibleInputs[yPos][xPos], input[currentIndex], currentIndex); 
 			if(possibleInputs[yPos][xPos]==5 && input[currentIndex] != possibleInputs[yPos][xPos])
 			{
 				fiveCount++;
@@ -137,10 +139,14 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 				fiveCount = 0;
 				if (input[currentIndex] == possibleInputs[yPos][xPos])
 				{
+					
 					currentIndex--;
-					if (currentIndex = 0)
+					if (currentIndex == length-1)
 					{
-						buffer.inputs[i][buttonCount+1] = 1;
+						savedI = i;
+					}else if(currentIndex == 0)
+					{
+						buffer.inputs[savedI][buttonCount+1] = 1;
 						return 1;
 					}	
 				}
@@ -153,6 +159,7 @@ uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
 //My update function.
 void parserUpdate()
 {
+
 	add(joyStatep1(), &Buffers[0]);
 	add(joyStatep2(), &Buffers[1]);
 	uint8_t testInput[] = {3,2,3,6};
@@ -161,8 +168,9 @@ void parserUpdate()
     dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Buffers + 1)[0], peek(Buffers + 1)[1], peek(Buffers + 1)[2],
             peek(Buffers + 1)[3], peek(Buffers + 1)[4], peek(Buffers + 1)[5], peek(Buffers + 1)[6], peek(Buffers + 1)[7]); 
 	
-	if(searchInput(testInput, Buffers[0], 1))
+	if(searchInput(testInput, Buffers[0], 0)){
 		printf("%s","true\n");
+}
 	else
 		printf("%s","false\n");
 }

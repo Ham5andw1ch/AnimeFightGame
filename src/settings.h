@@ -7,5 +7,6 @@
 #define bufferTolerance 3
 #define buttonCount 8
 #define fiveLimit 10
+#define fps 60
 
 #endif

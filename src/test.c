@@ -3,6 +3,7 @@
 #include "global.h"
 #include "joyState.h"
 #include "parser.h"
+#include "settings.h"
 
 void printEventTypes()
 {
@@ -109,6 +110,9 @@ void printEventTypes()
 //    }
 //}
 
+Uint64 NOW = 0;
+Uint64 LAST = 0;
+double deltaTime = 0.0;
 int main(int argc, char **argv)
 {
     if(SDL_Init(SDL_INIT_JOYSTICK))
@@ -135,8 +139,14 @@ int main(int argc, char **argv)
 
     while(1)
     {
-        parserUpdate();
+        LAST = NOW;
+        NOW = SDL_GetPerformanceCounter();
+        deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
+        //dbgprint("%d\t%d\t%f\n", LAST, NOW, deltaTime*.001);
+        if( deltaTime * .001 > (double)1/(double) fps){
+        deltaTime = 0;
         joyUpdate();
+        parserUpdate();
         SDL_Event e;
         if(SDL_PollEvent(&e))
         {
@@ -144,6 +154,7 @@ int main(int argc, char **argv)
             if(e.type == SDL_QUIT)
                 break;
             joyEvent(e);
+        }
         }
     }
 
