@@ -5,16 +5,15 @@
 #include "joyState.h"
 #include "settings.h"
 	
-	
+//Type that holds a queue of length queueLength. Used for storing input arrays.
 typedef struct
 {
 	int head;
 	int tail;
-	uint8_t *inputs[bufferLength];
+	uint8_t *inputs[queueLength];
 } queue_t;
 
-uint8_t updateFlag = 0;
-queue_t Buffers[2];
+//Mod function that is always positive.
 int mod(int x, int m)
 {
 	int r = x%m;
@@ -26,30 +25,36 @@ int mod(int x, int m)
 		return r;
 	}
 }
-//Initialize Buffers
-void initBuffers()
+queue_t Queues[2];
+
+//Initialize Queues
+void initQueues()
 {
-    Buffers[0].head = 0;
-    Buffers[1].head = 0;
-    Buffers[0].tail = 0;
-    Buffers[1].tail = 0;
+    Queues[0].head = 0;
+    Queues[1].head = 0;
+    Queues[0].tail = 0;
+    Queues[1].tail = 0;
 }
+
+//Remove Buffers from memory.
 void destroyBuffers()
 {
 }
+
+//Add a new input to the player's queue, deleting the input
 void add(uint8_t inputs[], queue_t* player)
 {	
 	if(player->inputs[player->head] != NULL)
 	{	
-		if(mod((player->head-1), bufferLength) == player->tail)
+		if(mod((player->head-1), queueLength) == player->tail)
 		{			
 			player->inputs[player->tail] = inputs;
-			player->tail = mod((player->tail-1),bufferLength);
-			player->head = mod((player->head-1),bufferLength);
+			player->tail = mod((player->tail-1),queueLength);
+			player->head = mod((player->head-1),queueLength);
 		}else
 		{
-			player->inputs[mod(player->head-1, bufferLength)] = inputs;
-			player->head = mod((player->head-1),bufferLength);
+			player->inputs[mod(player->head-1, queueLength)] = inputs;
+			player->head = mod((player->head-1),queueLength);
 		}
 		
 	}else
@@ -58,30 +63,35 @@ void add(uint8_t inputs[], queue_t* player)
 		player->tail = player->head;
 	}	
 }
+
+//Removes the element at the head location.
 uint8_t* pop(queue_t* player)
 {
 	uint8_t* temp = player->inputs[player->head];
 	free(player->inputs[player->head]);
 	player->inputs[player->head] = NULL;
-	player->head = mod((player->head+1), bufferLength);
+	player->head = mod((player->head+1), queueLength);
 	return temp;
 }
 
+//Returns the element at the head location
 uint8_t* peek(queue_t* player)
 {
 	uint8_t* temp = player->inputs[player->head];
 	return temp;
 }
 
+//Removes the element at the tail location.
 void removeTail(queue_t* player)
 {
 	if(player->inputs[player->tail] != NULL)
 	{
 		free(player->inputs[player->tail]);
 		player->inputs[player->tail] = NULL;
-		player->tail = mod((player->tail-1),bufferLength);
+		player->tail = mod((player->tail-1),queueLength);
 	}
 }
+
 //Input: uint8_t array of an input in anime notation with the first element being the length of the input, player input buffer
 uint8_t searchInput(uint8_t* input, queue_t buffer, uint8_t flag)
 {
@@ -100,7 +110,7 @@ uint8_t searchInput(uint8_t* input, queue_t buffer, uint8_t flag)
 	};
 	
 	//Scan the entire buffer
-	for (int i = buffer.head; i != buffer.tail; i= mod((i+1), bufferLength))
+	for (int i = buffer.head; i != buffer.tail; i= mod((i+1), queueLength))
 	{
 		if(buffer.inputs[i][buttonCount+1] == 1 && !flag)
 		{
@@ -161,15 +171,15 @@ uint8_t searchInput(uint8_t* input, queue_t buffer, uint8_t flag)
 void parserUpdate()
 {
 
-	add(joyStatep1(), &Buffers[0]);
-	add(joyStatep2(), &Buffers[1]);
+	add(joyStatep1(), &Queues[0]);
+	add(joyStatep2(), &Queues[1]);
 	uint8_t testInput[] = {3,2,3,6};
-	dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Buffers)[0], peek(Buffers)[1], peek(Buffers)[2],
-            peek(Buffers)[3], peek(Buffers)[4], peek(Buffers)[5], peek(Buffers)[6], peek(Buffers)[7]); 
-    dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Buffers + 1)[0], peek(Buffers + 1)[1], peek(Buffers + 1)[2],
-            peek(Buffers + 1)[3], peek(Buffers + 1)[4], peek(Buffers + 1)[5], peek(Buffers + 1)[6], peek(Buffers + 1)[7]); 
+	dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1], peek(Queues)[2],
+            peek(Queues)[3], peek(Queues)[4], peek(Queues)[5], peek(Queues)[6], peek(Queues)[7]); 
+    dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Queues + 1)[0], peek(Queues + 1)[1], peek(Queues + 1)[2],
+            peek(Queues + 1)[3], peek(Queues + 1)[4], peek(Queues + 1)[5], peek(Queues + 1)[6], peek(Queues + 1)[7]); 
 	
-	if(searchInput(testInput, Buffers[0], 0)){
+	if(searchInput(testInput, Queues[0], 0)){
 		printf("%s","true\n");
 }
 	else
