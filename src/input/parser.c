@@ -47,7 +47,6 @@ void destroyBuffers() {}
 void add(uint8_t inputs[], queue_t* player)
 {
     if (SDL_LockMutex(player->queueMutex) == 0) {
-       
         if (player->inputs[player->head] != NULL) {
             if (mod((player->head - 1), queueLength) == player->tail) {
                 player->inputs[player->tail] = inputs;
@@ -63,7 +62,6 @@ void add(uint8_t inputs[], queue_t* player)
         }
     } else {
         fprintf(stderr, "Couldn't lock mutex\n");
-       
     }
     SDL_UnlockMutex(player->queueMutex);
 }
@@ -149,7 +147,6 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 } else {
                     fiveCount = 0;
                     if (input[currentIndex] == possibleInputs[yPos][xPos]) {
-
                         currentIndex--;
                         if (currentIndex == length - 1) {
                             savedI = i;
