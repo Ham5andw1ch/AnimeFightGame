@@ -2,5 +2,6 @@
 #define PARSER_H_
 
 void parserUpdate();
+void initQueues();
 
 #endif

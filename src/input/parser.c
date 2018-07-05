@@ -47,7 +47,7 @@ void destroyBuffers() {}
 void add(uint8_t inputs[], queue_t* player)
 {
     if (SDL_LockMutex(player->queueMutex) == 0) {
-        dbgprint("%s", "AYYY LMAO");
+       
         if (player->inputs[player->head] != NULL) {
             if (mod((player->head - 1), queueLength) == player->tail) {
                 player->inputs[player->tail] = inputs;
@@ -63,7 +63,7 @@ void add(uint8_t inputs[], queue_t* player)
         }
     } else {
         fprintf(stderr, "Couldn't lock mutex\n");
-        dbgprint("%s", "Rip in Pepperonis");
+       
     }
     SDL_UnlockMutex(player->queueMutex);
 }

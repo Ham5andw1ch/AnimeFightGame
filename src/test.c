@@ -122,6 +122,7 @@ int main(int argc, char **argv)
     }
 
     joyInit();
+    initQueues();
 
 //  for(int i = 0; i < SDL_NumJoysticks(); ++i)
 //  {
