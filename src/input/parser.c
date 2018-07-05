@@ -11,9 +11,10 @@ typedef struct
 	int head;
 	int tail;
 	uint8_t *inputs[bufferLength];
-} buffer_t;
+} queue_t;
+
 uint8_t updateFlag = 0;
-buffer_t Buffers[2];
+queue_t Buffers[2];
 int mod(int x, int m)
 {
 	int r = x%m;
@@ -36,7 +37,7 @@ void initBuffers()
 void destroyBuffers()
 {
 }
-void add(uint8_t inputs[], buffer_t* player)
+void add(uint8_t inputs[], queue_t* player)
 {	
 	if(player->inputs[player->head] != NULL)
 	{	
@@ -57,7 +58,7 @@ void add(uint8_t inputs[], buffer_t* player)
 		player->tail = player->head;
 	}	
 }
-uint8_t* pop(buffer_t* player)
+uint8_t* pop(queue_t* player)
 {
 	uint8_t* temp = player->inputs[player->head];
 	free(player->inputs[player->head]);
@@ -66,13 +67,13 @@ uint8_t* pop(buffer_t* player)
 	return temp;
 }
 
-uint8_t* peek(buffer_t* player)
+uint8_t* peek(queue_t* player)
 {
 	uint8_t* temp = player->inputs[player->head];
 	return temp;
 }
 
-void removeTail(buffer_t* player)
+void removeTail(queue_t* player)
 {
 	if(player->inputs[player->tail] != NULL)
 	{
@@ -82,7 +83,7 @@ void removeTail(buffer_t* player)
 	}
 }
 //Input: uint8_t array of an input in anime notation with the first element being the length of the input, player input buffer
-uint8_t searchInput(uint8_t* input, buffer_t buffer, uint8_t flag)
+uint8_t searchInput(uint8_t* input, queue_t buffer, uint8_t flag)
 {
 	int length = input[0];
 	int currentIndex = length;
