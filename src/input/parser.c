@@ -41,7 +41,11 @@ void initQueues()
 }
 
 // Remove Buffers from memory.
-void destroyBuffers() {}
+void destroyBuffers() {
+    for (int i = 0; i < 2; i++) {
+        SDL_DestroyMutex(Queues[i].queueMutex);
+    }
+}
 
 // Add a new input to the player's queue, deleting the input
 void add(uint8_t inputs[], queue_t* player)
