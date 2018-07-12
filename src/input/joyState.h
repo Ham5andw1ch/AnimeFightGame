@@ -16,12 +16,12 @@ typedef struct
     int threshold; //if an axis, the threshold to count as pushed, takes sign
 } keybind;
 
-void joyInit();
-void joyUpdate();
+void joyInit(void);
+void joyUpdate(void);
 void joyEvent(SDL_Event);
-void joyRip();
+void joyRip(void);
 
-uint8_t* joyStatep1();
-uint8_t* joyStatep2();
+uint8_t* joyStatep1(uint8_t* out);
+uint8_t* joyStatep2(uint8_t* out);
 
 #endif

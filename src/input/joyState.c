@@ -247,7 +247,7 @@ int updateStateKey(SDL_KeyboardEvent* key)
     return 0;
 }
 
-void joyInit()
+void joyInit(void)
 {
 //  for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
 //  {
@@ -260,7 +260,7 @@ void joyInit()
     memset(joystatep2, 0, buttonCount * sizeof(*joystatep2));
 }
 
-void joyUpdate()
+void joyUpdate(void)
 {
     // Remove the one-frame button states
     for(int i = 0; i < buttonCount; ++i)
@@ -291,7 +291,7 @@ void joyEvent(SDL_Event e)
         updateStateDev(&e.jdevice);
 }
 
-void joyRip()
+void joyRip(void)
 {
     for(int i = 0; i < MaxJoysticks; ++i)
     {
@@ -303,16 +303,14 @@ void joyRip()
     }
 }
 
-uint8_t* joyStatep1()
+uint8_t* joyStatep1(uint8_t* out)
 {
-    uint8_t* ret = malloc(buttonCount * sizeof(*ret));
-    memcpy(ret, joystatep1, buttonCount * sizeof(*ret));
-    return ret;
+    memcpy(out, joystatep1, buttonCount * sizeof(*ret));
+    return out;
 }
 
-uint8_t* joyStatep2()
+uint8_t* joyStatep2(uint8_t* out)
 {
-    uint8_t* ret = malloc(buttonCount * sizeof(*ret));
-    memcpy(ret, joystatep2, buttonCount * sizeof(*ret));
-    return ret;
+    memcpy(out, joystatep2, buttonCount * sizeof(*ret));
+    return out;
 }
