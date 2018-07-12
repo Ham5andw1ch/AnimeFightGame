@@ -62,7 +62,7 @@ void remJoy(int index)
 {
     for(int i = 0; i < MaxJoysticks; ++i)
     {
-        if(joystick[i] == NULL && SDL_JoystickInstanceID(joystick[i]))
+        if(joystick[i] != NULL && SDL_JoystickInstanceID(joystick[i]))
         {
             SDL_JoystickClose(joystick[i]);
             joystick[i] = NULL;
@@ -122,7 +122,6 @@ int updateStateAxi(SDL_JoyAxisEvent* jaxis)
 
 int updateStateBut(SDL_JoyButtonEvent* jbutton)
 {
-    if(jbutton->type == SDL_JOYBUTTONDOWN)
     {
       //  dbgprint("%d: Button %d down on Joystick %d: %d\n", jbutton->timestamp,
       //          jbutton->button, jbutton->which, jbutton->state);
@@ -132,34 +131,20 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
             if(keysP1[i].type != BIND_BUTTON) continue;
             if(keysP1[i].joy != jbutton->which) continue;
             if(keysP1[i].ind != jbutton->button) continue;
-            joystatep1[i] = 1;
+            if(jbutton->type == SDL_JOYBUTTONDOWN)
+                joystatep1[i] = 1;
+            else
+                joystatep1[i] = 3;
         }
         for(int i = 0; i < buttonCount; ++i)
         {
             if(keysP2[i].type != BIND_BUTTON) continue;
             if(keysP2[i].joy != jbutton->which) continue;
             if(keysP2[i].ind != jbutton->button) continue;
-            joystatep2[i] = 1;
-        }
-    }
-    else
-    {
-       // dbgprint("%d: Button %d up on Joystick %d: %d\n", jbutton->timestamp,
-    //            jbutton->button, jbutton->which, jbutton->state);
-
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP1[i].type != BIND_BUTTON) continue;
-            if(keysP1[i].joy != jbutton->which) continue;
-            if(keysP1[i].ind != jbutton->button) continue;
-            joystatep1[i] = 3;
-        }
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP2[i].type != BIND_BUTTON) continue;
-            if(keysP2[i].joy != jbutton->which) continue;
-            if(keysP2[i].ind != jbutton->button) continue;
-            joystatep2[i] = 3;
+            if(jbutton->type == SDL_JOYBUTTONDOWN)
+                joystatep2[i] = 1;
+            else
+                joystatep2[i] = 3;
         }
     }
     return 0;
@@ -210,39 +195,25 @@ int updateStateHat(SDL_JoyHatEvent* jhat)
 
 int updateStateKey(SDL_KeyboardEvent* key)
 {
-    if(key->type == SDL_KEYDOWN)
+  //  dbgprint("%d: %s key pressed\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
+    for(int i = 0; i < buttonCount; ++i)
     {
-      //  dbgprint("%d: %s key pressed\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP1[i].type != BIND_KEYBOARD) continue;
-            if(keysP1[i].ind != key->keysym.sym) continue;
+        if(keysP1[i].type != BIND_KEYBOARD) continue;
+        if(keysP1[i].ind != key->keysym.sym) continue;
+        if(key->type == SDL_KEYDOWN)
             joystatep1[i] = 1;
-        }
-
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP2[i].type != BIND_KEYBOARD) continue;
-            if(keysP2[i].ind != key->keysym.sym) continue;
-            joystatep2[i] = 1;
-        }
-    }
-    else
-    {
-       // dbgprint("%d: %s key released\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP1[i].type != BIND_KEYBOARD) continue;
-            if(keysP1[i].ind != key->keysym.sym) continue;
+        else
             joystatep1[i] = 3;
-        }
+    }
 
-        for(int i = 0; i < buttonCount; ++i)
-        {
-            if(keysP2[i].type != BIND_KEYBOARD) continue;
-            if(keysP2[i].ind != key->keysym.sym) continue;
+    for(int i = 0; i < buttonCount; ++i)
+    {
+        if(keysP2[i].type != BIND_KEYBOARD) continue;
+        if(keysP2[i].ind != key->keysym.sym) continue;
+        if(key->type == SDL_KEYDOWN)
+            joystatep2[i] = 1;
+        else
             joystatep2[i] = 3;
-        }
     }
     return 0;
 }
