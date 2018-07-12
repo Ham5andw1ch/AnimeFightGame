@@ -53,14 +53,23 @@ void add(uint8_t inputs[], queue_t* player)
     if (SDL_LockMutex(player->queueMutex) == 0) {
         if (player->inputs[player->head] != NULL) {
             if (mod((player->head - 1), queueLength) == player->tail) {
+                if(player->inputs[player->tail] != NULL)
+                    free(player->inputs[player->tail]);
+
                 player->inputs[player->tail] = inputs;
                 player->tail = mod((player->tail - 1), queueLength);
                 player->head = mod((player->head - 1), queueLength);
             } else {
+                if(player->inputs[mod(player->head - 1, queueLength)] != NULL)
+                    free(player->inputs[mod(player->head - 1, queueLength)]);
+
                 player->inputs[mod(player->head - 1, queueLength)] = inputs;
                 player->head = mod((player->head - 1), queueLength);
             }
         } else {
+            if(player->inputs[player->head] != NULL)
+                free(player->inputs[player->head]);
+
             player->inputs[player->head] = inputs;
             player->tail = player->head;
         }
@@ -75,7 +84,6 @@ uint8_t* pop(queue_t* player)
 {
     if (SDL_LockMutex(player->queueMutex) == 0) {
         uint8_t* temp = player->inputs[player->head];
-        free(player->inputs[player->head]);
         player->inputs[player->head] = NULL;
         player->head = mod((player->head + 1), queueLength);
         return temp;
@@ -173,8 +181,10 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 // My update function.
 void parserUpdate()
 {
-    add(joyStatep1(), &Queues[0]);
-    add(joyStatep2(), &Queues[1]);
+    uint8_t *sp1 = malloc(buttonCount + 1 * sizeof(*sp1));
+    uint8_t *sp2 = malloc(buttonCount + 1 * sizeof(*sp1));
+    add(joyStatep1(sp1), &Queues[0]);
+    add(joyStatep2(sp2), &Queues[1]);
     uint8_t testInput[] = { 3, 2, 3, 6 };
     dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1],
         peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],

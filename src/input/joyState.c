@@ -305,12 +305,12 @@ void joyRip(void)
 
 uint8_t* joyStatep1(uint8_t* out)
 {
-    memcpy(out, joystatep1, buttonCount * sizeof(*ret));
+    memcpy(out, joystatep1, buttonCount * sizeof(*out));
     return out;
 }
 
 uint8_t* joyStatep2(uint8_t* out)
 {
-    memcpy(out, joystatep2, buttonCount * sizeof(*ret));
+    memcpy(out, joystatep2, buttonCount * sizeof(*out));
     return out;
 }
