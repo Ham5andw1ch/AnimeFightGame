@@ -43,6 +43,10 @@ void initQueues()
 // Remove Buffers from memory.
 void destroyBuffers() {
     for (int i = 0; i < 2; i++) {
+        for(int i = 0; i < bufferLength; i++){
+            if(Queues[i].inputs[i] != NULL)
+                free(Queues[i].inputs[i]);
+        }
         SDL_DestroyMutex(Queues[i].queueMutex);
     }
 }
@@ -136,7 +140,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 }
                 if (player->inputs[i][3] == 1 || player->inputs[i][3] == 2) {
                     xPos++;
-                    dbgprint("%s", "Rip in Pepperonis");
+                    
                 }
                 // Give up on the input if more than fiveLimit fives are consecutive
                 // *unless* that five is required by the input.
@@ -159,7 +163,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                             SDL_UnlockMutex(player->queueMutex);
                             return 1;
                         }
-                        dbgprint("%s", "Rip in Pepperonis");
+                        
                     }
                 }
             }
