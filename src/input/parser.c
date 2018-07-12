@@ -43,7 +43,7 @@ void initQueues()
 // Remove Buffers from memory.
 void destroyBuffers() {
     for (int i = 0; i < 2; i++) {
-        for(int i = 0; i < bufferLength; i++){
+        for(int i = 0; i < queueLength; i++){
             if(Queues[i].inputs[i] != NULL)
                 free(Queues[i].inputs[i]);
         }
