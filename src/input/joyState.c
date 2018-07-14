@@ -5,36 +5,7 @@
 
 #include "joyState.h"
 
-keybind keys[PlayerCount][ButtonCount] = {
-    {
-        { BIND_HAT, 0, 0, 1 },
-        { BIND_HAT, 0, 0, 4 },
-        { BIND_HAT, 0, 0, 8 },
-        { BIND_HAT, 0, 0, 2 },
-    //  { BIND_AXIS, 0, 1, -2000},
-    //  { BIND_AXIS, 0, 1, 2000},
-    //  { BIND_AXIS, 0, 0, -2000},
-    //  { BIND_AXIS, 0, 0, 2000},
-        { BIND_BUTTON, 0, 2, 0 },
-        { BIND_BUTTON, 0, 3, 0 },
-        { BIND_BUTTON, 0, 5, 0 },
-        { BIND_BUTTON, 0, 0, 0 },
-    },
-    {
-        { BIND_HAT, 1, 0, 1 },
-        { BIND_HAT, 1, 0, 4 },
-        { BIND_HAT, 1, 0, 8 },
-        { BIND_HAT, 1, 0, 2 },
-    //  { BIND_AXIS, 1, 1, -2000},
-    //  { BIND_AXIS, 1, 1, 2000},
-    //  { BIND_AXIS, 1, 0, -2000},
-    //  { BIND_AXIS, 1, 0, 2000},
-        { BIND_BUTTON, 1, 2, 0 },
-        { BIND_BUTTON, 1, 3, 0 },
-        { BIND_BUTTON, 1, 5, 0 },
-        { BIND_BUTTON, 1, 0, 0 },
-    }
-};
+keybind keys[PlayerCount][ButtonCount] = DefaultKeybinds;
 
 SDL_Joystick *joystick[MaxJoysticks];
 uint8_t joystate[PlayerCount][ButtonCount];
