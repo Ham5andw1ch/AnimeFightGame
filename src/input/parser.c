@@ -10,7 +10,7 @@
 typedef struct {
     int head;
     int tail;
-    uint8_t* inputs[queueLength];
+    uint8_t* inputs[QueueLength];
     SDL_mutex* queueMutex;
 } queue_t;
 
@@ -43,7 +43,7 @@ void initQueues()
 // Remove Buffers from memory.
 void destroyBuffers() {
     for (int i = 0; i < 2; i++) {
-        for(int i = 0; i < queueLength; i++){
+        for(int i = 0; i < QueueLength; i++){
             if(Queues[i].inputs[i] != NULL)
                 free(Queues[i].inputs[i]);
         }
@@ -56,19 +56,19 @@ void add(uint8_t inputs[], queue_t* player)
 {
     if (SDL_LockMutex(player->queueMutex) == 0) {
         if (player->inputs[player->head] != NULL) {
-            if (mod((player->head - 1), queueLength) == player->tail) {
+            if (mod((player->head - 1), QueueLength) == player->tail) {
                 if(player->inputs[player->tail] != NULL)
                     free(player->inputs[player->tail]);
 
                 player->inputs[player->tail] = inputs;
-                player->tail = mod((player->tail - 1), queueLength);
-                player->head = mod((player->head - 1), queueLength);
+                player->tail = mod((player->tail - 1), QueueLength);
+                player->head = mod((player->head - 1), QueueLength);
             } else {
-                if(player->inputs[mod(player->head - 1, queueLength)] != NULL)
-                    free(player->inputs[mod(player->head - 1, queueLength)]);
+                if(player->inputs[mod(player->head - 1, QueueLength)] != NULL)
+                    free(player->inputs[mod(player->head - 1, QueueLength)]);
 
-                player->inputs[mod(player->head - 1, queueLength)] = inputs;
-                player->head = mod((player->head - 1), queueLength);
+                player->inputs[mod(player->head - 1, QueueLength)] = inputs;
+                player->head = mod((player->head - 1), QueueLength);
             }
         } else {
             if(player->inputs[player->head] != NULL)
@@ -89,7 +89,7 @@ uint8_t* pop(queue_t* player)
     if (SDL_LockMutex(player->queueMutex) == 0) {
         uint8_t* temp = player->inputs[player->head];
         player->inputs[player->head] = NULL;
-        player->head = mod((player->head + 1), queueLength);
+        player->head = mod((player->head + 1), QueueLength);
         return temp;
     }
     SDL_UnlockMutex(player->queueMutex);
@@ -109,7 +109,7 @@ void removeTail(queue_t* player)
         if (player->inputs[player->tail] != NULL) {
             free(player->inputs[player->tail]);
             player->inputs[player->tail] = NULL;
-            player->tail = mod((player->tail - 1), queueLength);
+            player->tail = mod((player->tail - 1), QueueLength);
         }
     }
     SDL_UnlockMutex(player->queueMutex);
@@ -130,8 +130,8 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 
         // Scan the entire buffer
         for (int i = player->head; i != player->tail;
-             i = mod((i + 1), queueLength)) {
-            if (player->inputs[i][buttonCount + 1] == 1 && !flag) {
+             i = mod((i + 1), QueueLength)) {
+            if (player->inputs[i][ButtonCount + 1] == 1 && !flag) {
                 return 0;
             } else {
                 // Use inputs to calculate what direction is being held
@@ -156,7 +156,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                     currentIndex);
                 if (possibleInputs[yPos][xPos] == 5 && input[currentIndex] != possibleInputs[yPos][xPos]) {
                     fiveCount++;
-                    if (fiveCount >= fiveLimit) {
+                    if (fiveCount >= FiveLimit) {
                         return 0;
                     }
                     // Wasn't a five or five was needed.
@@ -167,7 +167,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                         if (currentIndex == length - 1) {
                             savedI = i;
                         } else if (currentIndex == 0) {
-                            player->inputs[savedI][buttonCount + 1] = 1;
+                            player->inputs[savedI][ButtonCount + 1] = 1;
                             SDL_UnlockMutex(player->queueMutex);
                             return 1;
                         }
@@ -185,10 +185,10 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 // My update function.
 void parserUpdate()
 {
-    uint8_t *sp1 = malloc(buttonCount + 1 * sizeof(*sp1));
-    uint8_t *sp2 = malloc(buttonCount + 1 * sizeof(*sp1));
-    add(joyStatep1(sp1), &Queues[0]);
-    add(joyStatep2(sp2), &Queues[1]);
+    uint8_t *sp1 = malloc(ButtonCount + 1 * sizeof(*sp1));
+    uint8_t *sp2 = malloc(ButtonCount + 1 * sizeof(*sp1));
+    add(joyState(0, sp1), &Queues[0]);
+    add(joyState(1, sp2), &Queues[1]);
     uint8_t testInput[] = { 3, 2, 3, 6 };
     dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1],
         peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],

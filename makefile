@@ -15,4 +15,5 @@ main: $(SUBDIRS)
 
 clean:
 	rm -f $(OBJ_DIR)/*.o
+	rm -f $(INC_DIR)/*.h
 	rm -f $(WORKDIR)/$(EXE)

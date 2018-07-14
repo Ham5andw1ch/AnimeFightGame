@@ -144,7 +144,7 @@ int main(int argc, char **argv)
         NOW = SDL_GetPerformanceCounter();
         deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
         //dbgprint("%d\t%d\t%f\n", LAST, NOW, deltaTime*.001);
-        if( deltaTime * .001 > (double)1/(double) fps){
+        if( deltaTime * .001 > (double)1/(double) FPS){
         deltaTime = 0;
         joyUpdate();
         parserUpdate();
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 //          dbgprint("Event Type %d\n", e.type);
             if(e.type == SDL_QUIT)
                 break;
-            joyEvent(e);
+            joyEvent(&e);
         }
         }
     }

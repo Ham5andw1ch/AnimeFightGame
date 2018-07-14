@@ -1,6 +1,7 @@
 #ifndef JOYSTATE_H_
 #define JOYSTATE_H_
 
+#include "SDL.h"
 #include "settings.h"
 
 enum bindType
@@ -18,10 +19,9 @@ typedef struct
 
 void joyInit(void);
 void joyUpdate(void);
-void joyEvent(SDL_Event);
+void joyEvent(SDL_Event*);
 void joyRip(void);
 
-uint8_t* joyStatep1(uint8_t* out);
-uint8_t* joyStatep2(uint8_t* out);
+uint8_t* joyState(int player, uint8_t* out);
 
 #endif
