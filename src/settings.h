@@ -6,7 +6,6 @@
 #define PlayerCount 2
 
 #define QueueLength 30
-#define QueueTolerance 3
 #define FiveLimit 10
 #define FPS 60
 
