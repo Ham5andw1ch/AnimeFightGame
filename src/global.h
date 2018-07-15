@@ -2,7 +2,9 @@
 #define GLOBAL_H_
 
 #ifdef DEBUG_
-    #define PERR_
+    #ifndef PERR_
+        #define PERR_
+    #endif
     #define dbgprint(...) printf(__VA_ARGS__)
 #else
     #define dbgprint(...) do{}while(0)
