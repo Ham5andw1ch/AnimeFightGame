@@ -152,8 +152,10 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 }
                 // Give up on the input if more than fiveLimit fives are consecutive
                 // *unless* that five is required by the input.
-                dbgprint("[%d %d %d]", possibleInputs[yPos][xPos], input[currentIndex],
-                    currentIndex);
+                
+                //dbgprint("[%d %d %d]", possibleInputs[yPos][xPos], input[currentIndex],
+                //    currentIndex);
+                
                 if (possibleInputs[yPos][xPos] == 5 && input[currentIndex] != possibleInputs[yPos][xPos]) {
                     fiveCount++;
                     if (fiveCount >= FiveLimit) {
