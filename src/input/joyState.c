@@ -7,6 +7,7 @@
 
 keybind keys[PlayerCount][ButtonCount] = DefaultKeybinds;
 
+int nextJoyID = 0;
 SDL_Joystick *joystick[MaxJoysticks];
 uint8_t joystate[PlayerCount][ButtonCount];
 
@@ -23,6 +24,7 @@ int addJoy(int index)
                 SDL_ClearError();
                 return 1; // SDL error
             }
+            nextJoyID = SDL_JoystickInstanceID(joystick[i]) + 1; // auto-rebind controller
             return 0;
         }
     }
@@ -33,10 +35,27 @@ void remJoy(int index)
 {
     for(int i = 0; i < MaxJoysticks; ++i)
     {
-        if(joystick[i] != NULL && SDL_JoystickInstanceID(joystick[i]))
+        if(joystick[i] != NULL && SDL_JoystickInstanceID(joystick[i]) == index)
         {
+            int joyID = SDL_JoystickInstanceID(joystick[i]);
             SDL_JoystickClose(joystick[i]);
             joystick[i] = NULL;
+            // Code for auto-rebind controller. A joystick instance ID is never reused,
+            // so this moves all keybinds that use that ID to the next one to be added.
+            for(int p = 0; p < PlayerCount; ++p)
+            {
+                for(int b = 0; b < ButtonCount; ++b)
+                {
+                    // If the next Joystick instance ID already has matching keybinds,
+                    // e.g. if only a single stick is added and then removed and there are
+                    // two sets of keybinds mapped by default, bump those up one.
+                    if(keys[p][b].type != BIND_KEYBOARD && keys[p][b].joy == nextJoyID)
+                        keys[p][b].joy = nextJoyID + 1;
+                    // Set it to the next Joystick instance ID that will be added.
+                    if(keys[p][b].type != BIND_KEYBOARD && keys[p][b].joy == joyID)
+                        keys[p][b].joy = nextJoyID;
+                }
+            }
             return;
         }
     }
