@@ -206,8 +206,13 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 // My update function.
 void parserUpdate()
 {
-    uint8_t* sp1 = malloc(ButtonCount + MacroCount + 1 * sizeof(*sp1));
-    uint8_t* sp2 = malloc(ButtonCount + MacroCount + 1 * sizeof(*sp1));
+    uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
+    sp1 = joyState(0, sp1);
+    dbgprint("[%d %d %d %d %d %d %d %d %d %d %d %d]\t", sp1[0], sp1[1],
+        sp1[2], sp1[3], sp1[4], sp1[5],
+       sp1[6], sp1[7], sp1[8], sp1[9],
+       sp1[10], sp1[11]);
+    uint8_t* sp2 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
     add(joyState(0, sp1), &Queues[0]);
     add(joyState(1, sp2), &Queues[1]);
     uint8_t testInput[] = { 3, 2, 3, 6 };
