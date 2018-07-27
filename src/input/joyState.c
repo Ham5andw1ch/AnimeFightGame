@@ -241,14 +241,29 @@ void rebind(int player, enum ButtonName keybind)
     rebindButton = keybind;
 }
 
+int joyEvent(void* userdata, SDL_Event* e)
+{
+    if(e->type == SDL_KEYDOWN || e->type == SDL_KEYUP)
+        updateStateKey(&e->key);
+    if(e->type == SDL_JOYAXISMOTION)
+        updateStateAxi(&e->jaxis);
+    if(e->type == SDL_JOYHATMOTION)
+        updateStateHat(&e->jhat);
+    if(e->type == SDL_JOYBUTTONDOWN || e->type == SDL_JOYBUTTONUP)
+        updateStateBut(&e->jbutton);
+    if(e->type == SDL_JOYDEVICEADDED || e->type == SDL_JOYDEVICEREMOVED)
+        updateStateDev(&e->jdevice);
+}
+
 void joyInit(void)
 {
-//  for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
-//  {
-//      dbgprint("Joystick %d Added\n", i);
-//      addJoy(i);
-//  }
+    for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
+    {
+        dbgprint("Joystick %d Added\n", i);
+        addJoy(i);
+    }
 
+    SDL_AddEventWatch(joyEvent, NULL);
     memset(joystick, (size_t)NULL, MaxJoysticks * sizeof(*joystick));
     memset(joystate, 0, PlayerCount * ButtonCount * sizeof(*joystate));
 }
@@ -269,20 +284,6 @@ void joyUpdate(void)
     //        joystatep1[3], joystatep1[4], joystatep1[5], joystatep1[6], joystatep1[7]); 
     //dbgprint("[%d %d %d %d %d %d %d %d]\n", joystatep2[0], joystatep2[1], joystatep2[2],
     //        joystatep2[3], joystatep2[4], joystatep2[5], joystatep2[6], joystatep2[7]); 
-}
-
-void joyEvent(SDL_Event* e)
-{
-    if(e->type == SDL_KEYDOWN || e->type == SDL_KEYUP)
-        updateStateKey(&e->key);
-    if(e->type == SDL_JOYAXISMOTION)
-        updateStateAxi(&e->jaxis);
-    if(e->type == SDL_JOYHATMOTION)
-        updateStateHat(&e->jhat);
-    if(e->type == SDL_JOYBUTTONDOWN || e->type == SDL_JOYBUTTONUP)
-        updateStateBut(&e->jbutton);
-    if(e->type == SDL_JOYDEVICEADDED || e->type == SDL_JOYDEVICEREMOVED)
-        updateStateDev(&e->jdevice);
 }
 
 void joyRip(void)

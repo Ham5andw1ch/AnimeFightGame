@@ -162,9 +162,7 @@ int main(int argc, char **argv)
                 if(e.type == SDL_QUIT)
                     break;
                 if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_r)
-                    rebind(0, MACRO_ABCD);
-                else
-                    joyEvent(&e);
+                    rebind(0, DIR_UP);
             }
         }
     }
