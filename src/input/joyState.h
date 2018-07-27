@@ -6,7 +6,7 @@
 
 enum bindType
 {
-    BIND_KEYBOARD, BIND_AXIS, BIND_BUTTON, BIND_HAT
+    BIND_KEYBOARD, BIND_AXIS, BIND_BUTTON, BIND_HAT, BIND_NONE
 };
 
 typedef struct
