@@ -2,8 +2,9 @@
 #define SETTINGS_H_
 
 #define MaxJoysticks 10
-#define ButtonCount 8
 #define PlayerCount 2
+#define ButtonCount 8
+#define MacroCount 4
 
 #define QueueLength 30
 #define FiveLimit 10
@@ -40,7 +41,11 @@ enum ButtonName {
     BUTTON_A,
     BUTTON_B,
     BUTTON_C,
-    BUTTON_D
+    BUTTON_D,
+    MACRO_AC,
+    MACRO_AB,
+    MACRO_BD,
+    MACRO_ABCD
 }
 
 #endif
