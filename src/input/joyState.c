@@ -4,15 +4,17 @@
 #include "settings.h"
 
 #include "joyState.h"
+#define InputCount ButtonCount + MacroCount
 
-keybind keys[PlayerCount][ButtonCount + MacroCount] = DefaultKeybinds;
+keybind keys[PlayerCount][InputCount] = DefaultKeybinds;
 bool rebinding = false;
 int rebindPlayer = 0;
 int rebindButton = 0;
 
 int nextJoyID = 0;
 SDL_Joystick *joystick[MaxJoysticks];
-uint8_t joystate[PlayerCount][ButtonCount + MacroCount];
+uint8_t rawstate[PlayerCount][InputCount];
+uint8_t joystate[PlayerCount][InputCount];
 
 int addJoy(int index)
 {
@@ -47,7 +49,7 @@ void remJoy(int index)
             // so this moves all keybinds that use that ID to the next one to be added.
             for(int p = 0; p < PlayerCount; ++p)
             {
-                for(int b = 0; b < ButtonCount; ++b)
+                for(int b = 0; b < InputCount; ++b)
                 {
                     // If the next Joystick instance ID already has matching keybinds,
                     // e.g. if only a single stick is added and then removed and there are
@@ -93,7 +95,7 @@ int updateStateAxi(SDL_JoyAxisEvent* jaxis)
 
     for(int p = 0; p < PlayerCount; ++p)
     {
-        for(int i = 0; i < ButtonCount; ++i)
+        for(int i = 0; i < InputCount; ++i)
         {
             if(keys[p][i].type != BIND_AXIS) continue;
             if(keys[p][i].joy != jaxis->which) continue;
@@ -101,16 +103,16 @@ int updateStateAxi(SDL_JoyAxisEvent* jaxis)
             if(keys[p][i].threshold >= 0)
             {
                 if(jaxis->value >= keys[p][i].threshold)
-                    joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
+                    rawstate[p][i] = 1;
                 else
-                    joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
+                    rawstate[p][i] = 0;
             }
             else
             {
                 if(jaxis->value <= keys[p][i].threshold)
-                    joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
+                    rawstate[p][i] = 1;
                 else
-                    joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
+                    rawstate[p][i] = 0;
             }
         }
     }
@@ -137,15 +139,15 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
 
     for(int p = 0; p < PlayerCount; ++p)
     {
-        for(int i = 0; i < ButtonCount; ++i)
+        for(int i = 0; i < InputCount; ++i)
         {
             if(keys[p][i].type != BIND_BUTTON) continue;
             if(keys[p][i].joy != jbutton->which) continue;
             if(keys[p][i].ind != jbutton->button) continue;
             if(jbutton->type == SDL_JOYBUTTONDOWN)
-                joystate[p][i] = 1;
+                rawstate[p][i] = 1;
             else
-                joystate[p][i] = 3;
+                rawstate[p][i] = 0;
         }
     }
     return 0;
@@ -189,15 +191,15 @@ int updateStateHat(SDL_JoyHatEvent* jhat)
 
     for(int p = 0; p < PlayerCount; ++p)
     {
-        for(int i = 0; i < ButtonCount; ++i)
+        for(int i = 0; i < InputCount; ++i)
         {
             if(keys[p][i].type != BIND_HAT) continue;
             if(keys[p][i].joy != jhat->which) continue;
             if(keys[p][i].ind != jhat->hat) continue;
             if((keys[p][i].threshold & jhat->value) > 0)
-                joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
+                rawstate[p][i] = 1;
             else
-                joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
+                rawstate[p][i] = 0;
         }
     }
     return 0;
@@ -220,14 +222,14 @@ int updateStateKey(SDL_KeyboardEvent* key)
     }
     for(int p = 0; p < PlayerCount; ++p)
     {
-        for(int i = 0; i < ButtonCount; ++i)
+        for(int i = 0; i < InputCount; ++i)
         {
             if(keys[p][i].type != BIND_KEYBOARD) continue;
             if(keys[p][i].ind != key->keysym.sym) continue;
             if(key->type == SDL_KEYDOWN)
-                joystate[p][i] = 1;
+                rawstate[p][i] = 1;
             else
-                joystate[p][i] = 3;
+                rawstate[p][i] = 0;
         }
     }
     return 0;
@@ -265,7 +267,8 @@ void joyInit(void)
 
     SDL_AddEventWatch(joyEvent, NULL);
     memset(joystick, (size_t)NULL, MaxJoysticks * sizeof(*joystick));
-    memset(joystate, 0, PlayerCount * ButtonCount * sizeof(*joystate));
+    memset(rawstate, 0, PlayerCount * InputCount * sizeof(*rawstate));
+    memset(joystate, 0, PlayerCount * InputCount * sizeof(*joystate));
 }
 
 void joyUpdate(void)
@@ -273,10 +276,12 @@ void joyUpdate(void)
     // Remove the one-frame button states
     for(int p = 0; p < PlayerCount; ++p)
     {
-        for(int i = 0; i < ButtonCount; ++i)
+        for(int i = 0; i < InputCount; ++i)
         {
-            if(joystate[p][i] % 2 == 1)
-                joystate[p][i] = (joystate[p][i] + 1) % 4;
+            if(rawstate[p][i] == 1)
+                joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
+            else
+                joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
         }
     }
 
@@ -300,6 +305,6 @@ void joyRip(void)
 
 uint8_t* joyState(int player, uint8_t* out)
 {
-    memcpy(out, joystate[player], ButtonCount * sizeof(*out));
+    memcpy(out, joystate[player], InputCount * sizeof(*out));
     return out;
 }
