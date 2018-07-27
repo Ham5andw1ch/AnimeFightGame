@@ -41,10 +41,11 @@ void initQueues()
 }
 
 // Remove Buffers from memory.
-void destroyBuffers() {
+void destroyBuffers()
+{
     for (int i = 0; i < 2; i++) {
-        for(int i = 0; i < QueueLength; i++){
-            if(Queues[i].inputs[i] != NULL)
+        for (int i = 0; i < QueueLength; i++) {
+            if (Queues[i].inputs[i] != NULL)
                 free(Queues[i].inputs[i]);
         }
         SDL_DestroyMutex(Queues[i].queueMutex);
@@ -54,24 +55,44 @@ void destroyBuffers() {
 // Add a new input to the player's queue, deleting the input
 void add(uint8_t inputs[], queue_t* player)
 {
+    
+    for (int i = 3; i > 0; i--) {
+        //Fix A using macros
+        if (inputs[MACRO_AC] == i || inputs[MACRO_AB] == i || inputs[MACRO_ABCD] == i) {
+            inputs[BUTTON_A] = i;
+        }
+         //Fix B using macros
+        if (inputs[MACRO_AB] == i || inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
+            inputs[BUTTON_B] = i;
+        }
+        //Fix C using macros
+        if (inputs[MACRO_AC] == i || inputs[MACRO_ABCD] == i) {
+            inputs[BUTTON_C] = i;
+        }
+        //Fix D using macros
+        if (inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
+            inputs[BUTTON_D] = i;
+        }
+    }
+
     if (SDL_LockMutex(player->queueMutex) == 0) {
         if (player->inputs[player->head] != NULL) {
             if (mod((player->head - 1), QueueLength) == player->tail) {
-                if(player->inputs[player->tail] != NULL)
+                if (player->inputs[player->tail] != NULL)
                     free(player->inputs[player->tail]);
 
                 player->inputs[player->tail] = inputs;
                 player->tail = mod((player->tail - 1), QueueLength);
                 player->head = mod((player->head - 1), QueueLength);
             } else {
-                if(player->inputs[mod(player->head - 1, QueueLength)] != NULL)
+                if (player->inputs[mod(player->head - 1, QueueLength)] != NULL)
                     free(player->inputs[mod(player->head - 1, QueueLength)]);
 
                 player->inputs[mod(player->head - 1, QueueLength)] = inputs;
                 player->head = mod((player->head - 1), QueueLength);
             }
         } else {
-            if(player->inputs[player->head] != NULL)
+            if (player->inputs[player->head] != NULL)
                 free(player->inputs[player->head]);
 
             player->inputs[player->head] = inputs;
@@ -148,14 +169,13 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 }
                 if (player->inputs[i][3] == 1 || player->inputs[i][3] == 2) {
                     xPos++;
-                    
                 }
                 // Give up on the input if more than fiveLimit fives are consecutive
                 // *unless* that five is required by the input.
-                
+
                 //dbgprint("[%d %d %d]", possibleInputs[yPos][xPos], input[currentIndex],
                 //    currentIndex);
-                
+
                 if (possibleInputs[yPos][xPos] == 5 && input[currentIndex] != possibleInputs[yPos][xPos]) {
                     fiveCount++;
                     if (fiveCount >= FiveLimit) {
@@ -173,7 +193,6 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                             SDL_UnlockMutex(player->queueMutex);
                             return 1;
                         }
-                        
                     }
                 }
             }
@@ -187,8 +206,8 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 // My update function.
 void parserUpdate()
 {
-    uint8_t *sp1 = malloc(ButtonCount + 1 * sizeof(*sp1));
-    uint8_t *sp2 = malloc(ButtonCount + 1 * sizeof(*sp1));
+    uint8_t* sp1 = malloc(ButtonCount + MacroCount + 1 * sizeof(*sp1));
+    uint8_t* sp2 = malloc(ButtonCount + MacroCount + 1 * sizeof(*sp1));
     add(joyState(0, sp1), &Queues[0]);
     add(joyState(1, sp2), &Queues[1]);
     uint8_t testInput[] = { 3, 2, 3, 6 };
