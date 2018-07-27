@@ -46,6 +46,6 @@ enum ButtonName {
     MACRO_AB,
     MACRO_BD,
     MACRO_ABCD
-}
+};
 
 #endif
