@@ -5,14 +5,14 @@
 
 #include "joyState.h"
 
-keybind keys[PlayerCount][ButtonCount] = DefaultKeybinds;
+keybind keys[PlayerCount][ButtonCount + MacroCount] = DefaultKeybinds;
 bool rebinding = false;
 int rebindPlayer = 0;
 int rebindButton = 0;
 
 int nextJoyID = 0;
 SDL_Joystick *joystick[MaxJoysticks];
-uint8_t joystate[PlayerCount][ButtonCount];
+uint8_t joystate[PlayerCount][ButtonCount + MacroCount];
 
 int addJoy(int index)
 {

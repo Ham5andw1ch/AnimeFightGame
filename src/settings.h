@@ -20,6 +20,10 @@
         { BIND_BUTTON, 0, 3, 0 },   \
         { BIND_BUTTON, 0, 5, 0 },   \
         { BIND_BUTTON, 0, 0, 0 },   \
+        { BIND_BUTTON, 0, 9, 0 },   \
+        { BIND_BUTTON, 0, 9, 0 },   \
+        { BIND_BUTTON, 0, 9, 0 },   \
+        { BIND_BUTTON, 0, 9, 0 },   \
     },                              \
     {                               \
         { BIND_HAT, 1, 0, 1 },      \
@@ -30,6 +34,10 @@
         { BIND_BUTTON, 1, 3, 0 },   \
         { BIND_BUTTON, 1, 5, 0 },   \
         { BIND_BUTTON, 1, 0, 0 },   \
+        { BIND_BUTTON, 1, 9, 0 },   \
+        { BIND_BUTTON, 1, 9, 0 },   \
+        { BIND_BUTTON, 1, 9, 0 },   \
+        { BIND_BUTTON, 1, 9, 0 },   \
     }                               \
 } 
 
