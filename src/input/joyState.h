@@ -17,6 +17,8 @@ typedef struct
     int threshold; //if an axis, the threshold to count as pushed, takes sign
 } keybind;
 
+void rebind(int player, enum ButtonName keybind);
+
 void joyInit(void);
 void joyUpdate(void);
 void joyEvent(SDL_Event*);

@@ -115,28 +115,35 @@ Uint64 LAST = 0;
 double deltaTime = 0.0;
 int main(int argc, char **argv)
 {
-    if(SDL_Init(SDL_INIT_JOYSTICK))
+    if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK))
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Unable to initialize SDL: %s", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Window *window = SDL_CreateWindow("Anime Fight Game Test Main", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_RESIZABLE);
+    if(window == NULL)
+    {
+        errprint("Could not create window: %s\n", SDL_GetError());
         return 1;
     }
 
     joyInit();
     initQueues();
 
-//  for(int i = 0; i < SDL_NumJoysticks(); ++i)
-//  {
-//      dbgprint("Joystick %d Added\n", i);
-//      if(!(joysticks[nextJoy++] = SDL_JoystickOpen(i)))
-//      {
-//          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't open Joystick %d: %s\n", i,
-//                  SDL_GetError());
-//      }
-//  }
+    //  for(int i = 0; i < SDL_NumJoysticks(); ++i)
+    //  {
+    //      dbgprint("Joystick %d Added\n", i);
+    //      if(!(joysticks[nextJoy++] = SDL_JoystickOpen(i)))
+    //      {
+    //          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't open Joystick %d: %s\n", i,
+    //                  SDL_GetError());
+    //      }
+    //  }
 
-//  SDL_AddEventWatch(joystickWatch, NULL);
+    //  SDL_AddEventWatch(joystickWatch, NULL);
 
-//  printEventTypes();
+    //  printEventTypes();
 
     while(1)
     {
@@ -145,31 +152,35 @@ int main(int argc, char **argv)
         deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
         //dbgprint("%d\t%d\t%f\n", LAST, NOW, deltaTime*.001);
         if( deltaTime * .001 > (double)1/(double) FPS){
-        deltaTime = 0;
-        joyUpdate();
-        parserUpdate();
-        SDL_Event e;
-        if(SDL_PollEvent(&e))
-        {
-//          dbgprint("Event Type %d\n", e.type);
-            if(e.type == SDL_QUIT)
-                break;
-            joyEvent(&e);
-        }
+            deltaTime = 0;
+            joyUpdate();
+            parserUpdate();
+            SDL_Event e;
+            if(SDL_PollEvent(&e))
+            {
+                //          dbgprint("Event Type %d\n", e.type);
+                if(e.type == SDL_QUIT)
+                    break;
+                if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_r)
+                    rebind(0,0);
+                else
+                    joyEvent(&e);
+            }
         }
     }
 
     joyRip();
 
-//  for(int i = 0; i < nextJoy; ++i)
-//  {
-//      if(joysticks[i] != NULL && SDL_JoystickGetAttached(joysticks[i]))
-//      {
-//          dbgprint("Joystick %d Removed\n", SDL_JoystickInstanceID(joysticks[i]));
-//          SDL_JoystickClose(joysticks[i]);
-//      }
-//  }
+    //  for(int i = 0; i < nextJoy; ++i)
+    //  {
+    //      if(joysticks[i] != NULL && SDL_JoystickGetAttached(joysticks[i]))
+    //      {
+    //          dbgprint("Joystick %d Removed\n", SDL_JoystickInstanceID(joysticks[i]));
+    //          SDL_JoystickClose(joysticks[i]);
+    //      }
+    //  }
 
+    SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
 }

@@ -6,6 +6,9 @@
 #include "joyState.h"
 
 keybind keys[PlayerCount][ButtonCount] = DefaultKeybinds;
+bool rebinding = false;
+int rebindPlayer = 0;
+int rebindButton = 0;
 
 int nextJoyID = 0;
 SDL_Joystick *joystick[MaxJoysticks];
@@ -49,8 +52,8 @@ void remJoy(int index)
                     // If the next Joystick instance ID already has matching keybinds,
                     // e.g. if only a single stick is added and then removed and there are
                     // two sets of keybinds mapped by default, bump those up one.
-                    if(keys[p][b].type != BIND_KEYBOARD && keys[p][b].joy == nextJoyID)
-                        keys[p][b].joy = nextJoyID + 1;
+                    if(keys[p][b].type != BIND_KEYBOARD && keys[p][b].joy >= nextJoyID)
+                        keys[p][b].joy += 1;
                     // Set it to the next Joystick instance ID that will be added.
                     if(keys[p][b].type != BIND_KEYBOARD && keys[p][b].joy == joyID)
                         keys[p][b].joy = nextJoyID;
@@ -66,6 +69,28 @@ int updateStateAxi(SDL_JoyAxisEvent* jaxis)
 {
   //  dbgprint("%d: Axis %d on Joystick %d: %d\n", jaxis->timestamp,
   //          jaxis->axis, jaxis->which, jaxis->value);
+    if(rebinding)
+    {
+        if(jaxis->value >= 0 && jaxis->value >= (INT16_MAX / 2))
+        {
+            keys[rebindPlayer][rebindButton].type = BIND_AXIS;
+            keys[rebindPlayer][rebindButton].joy = jaxis->which;
+            keys[rebindPlayer][rebindButton].ind = jaxis->axis;
+            keys[rebindPlayer][rebindButton].threshold = INT16_MAX / 2;
+            rebinding = false;
+            return 0;
+        }
+        else if(jaxis->value < 0 && jaxis->value <= (INT16_MIN / 2))
+        {
+            keys[rebindPlayer][rebindButton].type = BIND_AXIS;
+            keys[rebindPlayer][rebindButton].joy = jaxis->which;
+            keys[rebindPlayer][rebindButton].ind = jaxis->axis;
+            keys[rebindPlayer][rebindButton].threshold = INT16_MIN / 2;
+            rebinding = false;
+            return 0;
+        }
+    }
+
     for(int p = 0; p < PlayerCount; ++p)
     {
         for(int i = 0; i < ButtonCount; ++i)
@@ -96,6 +121,19 @@ int updateStateBut(SDL_JoyButtonEvent* jbutton)
 {
     //  dbgprint("%d: Button %d down on Joystick %d: %d\n", jbutton->timestamp,
     //          jbutton->button, jbutton->which, jbutton->state);
+
+    if(rebinding)
+    {
+        if(jbutton->type == SDL_JOYBUTTONDOWN)
+        {
+            keys[rebindPlayer][rebindButton].type = BIND_BUTTON;
+            keys[rebindPlayer][rebindButton].joy = jbutton->which;
+            keys[rebindPlayer][rebindButton].ind = jbutton->button;
+            keys[rebindPlayer][rebindButton].threshold = 0;
+            rebinding = false;
+            return 0;
+        }
+    }
 
     for(int p = 0; p < PlayerCount; ++p)
     {
@@ -132,6 +170,23 @@ int updateStateHat(SDL_JoyHatEvent* jhat)
 {
  //   dbgprint("%d: POV Hat %d on Joystick %d: %d\n", jhat->timestamp,
    //         jhat->hat, jhat->which, jhat->value);
+    if(rebinding)
+    {
+        switch(jhat->value)
+        {
+        case 1:
+        case 2:
+        case 4:
+        case 8:
+            keys[rebindPlayer][rebindButton].type = BIND_HAT;
+            keys[rebindPlayer][rebindButton].joy = jhat->which;
+            keys[rebindPlayer][rebindButton].ind = jhat->hat;
+            keys[rebindPlayer][rebindButton].threshold = jhat->value;
+            rebinding = false;
+            return 0;
+        }
+    }
+
     for(int p = 0; p < PlayerCount; ++p)
     {
         for(int i = 0; i < ButtonCount; ++i)
@@ -151,6 +206,18 @@ int updateStateHat(SDL_JoyHatEvent* jhat)
 int updateStateKey(SDL_KeyboardEvent* key)
 {
   //  dbgprint("%d: %s key pressed\n", key->timestamp, SDL_GetKeyName(key->keysym.sym));
+    if(rebinding)
+    {
+        if(key->type == SDL_KEYDOWN)
+        {
+            keys[rebindPlayer][rebindButton].type = BIND_KEYBOARD;
+            keys[rebindPlayer][rebindButton].joy = -1;
+            keys[rebindPlayer][rebindButton].ind = key->keysym.sym;
+            keys[rebindPlayer][rebindButton].threshold = 0;
+            rebinding = false;
+            return 0;
+        }
+    }
     for(int p = 0; p < PlayerCount; ++p)
     {
         for(int i = 0; i < ButtonCount; ++i)
@@ -164,6 +231,14 @@ int updateStateKey(SDL_KeyboardEvent* key)
         }
     }
     return 0;
+}
+
+void rebind(int player, enum ButtonName keybind)
+{
+    dbgprint("Rebinding Player %d's Button %d\n", player, keybind);
+    rebinding = true;
+    rebindPlayer = player;
+    rebindButton = keybind;
 }
 
 void joyInit(void)
