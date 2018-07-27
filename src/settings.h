@@ -32,4 +32,15 @@
     }                               \
 } 
 
+enum ButtonName {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT,
+    BUTTON_A,
+    BUTTON_B,
+    BUTTON_C,
+    BUTTON_D
+}
+
 #endif
