@@ -58,19 +58,19 @@ void add(uint8_t inputs[], queue_t* player)
     
     for (int i = 3; i > 0; i--) {
         //Fix A using macros
-        if (inputs[MACRO_AC] == i || inputs[MACRO_AB] == i || inputs[MACRO_ABCD] == i) {
+        if (inputs[BUTTON_A] == i || inputs[MACRO_AC] == i || inputs[MACRO_AB] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_A] = i;
         }
          //Fix B using macros
-        if (inputs[MACRO_AB] == i || inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
+        if (inputs[BUTTON_B] == i || inputs[MACRO_AB] == i || inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_B] = i;
         }
         //Fix C using macros
-        if (inputs[MACRO_AC] == i || inputs[MACRO_ABCD] == i) {
+        if (inputs[BUTTON_C] == i || inputs[MACRO_AC] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_C] = i;
         }
         //Fix D using macros
-        if (inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
+        if (inputs[BUTTON_D] == i ||inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_D] = i;
         }
     }
