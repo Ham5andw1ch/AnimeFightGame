@@ -1,4 +1,4 @@
-#include "SDL_thread.h"
+#include "SDL2/SDL_thread.h"
 #include "joyState.h"
 #include "settings.h"
 #include <global.h>
