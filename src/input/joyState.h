@@ -1,7 +1,7 @@
 #ifndef JOYSTATE_H_
 #define JOYSTATE_H_
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include "settings.h"
 
 enum bindType
