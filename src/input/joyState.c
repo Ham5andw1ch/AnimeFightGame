@@ -267,8 +267,8 @@ void joyInit(void)
 
     SDL_AddEventWatch(joyEvent, NULL);
     memset(joystick, (size_t)NULL, MaxJoysticks * sizeof(*joystick));
-    memset(rawstate, 0, PlayerCount * InputCount * sizeof(*rawstate));
-    memset(joystate, 0, PlayerCount * InputCount * sizeof(*joystate));
+    memset(rawstate, 0, PlayerCount * InputCount * sizeof(**rawstate));
+    memset(joystate, 0, PlayerCount * InputCount * sizeof(**joystate));
 }
 
 void joyUpdate(void)
