@@ -1,8 +1,13 @@
 GCC= gcc
-CFLAGS= -g
-LFLAGS =
+ifeq ($(shell uname -s), Darwin)
+CFLAGS = -g
+LFLAGS = -framework SDL2
+else
+CFLAGS = -g $(shell sdl2-config --cflags)
+LFLAGS = $(shell sdl2-config --libs)
+endif
 
-EXE = ff2animage
+EXE = dispsprite
 OBS = $(addsuffix .o, $(basename $(wildcard *.c)))
 
 %.o: %.c

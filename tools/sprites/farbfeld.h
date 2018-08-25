@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define MAX_WIDTH 1000
-#define MAX_HEIGHT 1000 
+#define MAX_WIDTH 7800
+#define MAX_HEIGHT 200 
 
 struct farbfeld
 {

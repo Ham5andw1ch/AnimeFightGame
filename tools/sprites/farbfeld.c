@@ -65,5 +65,7 @@ int readFarbfeld(char* filename, struct farbfeld* img)
             fixEnd16(&(img->rgba[r * img->width + c].alpha));
         }
     }
+
+    fclose(in);
     return 0;
 }
