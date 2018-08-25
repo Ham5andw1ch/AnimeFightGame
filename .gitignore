@@ -59,8 +59,7 @@ dkms.conf
 *.db
 
 #IDE Junk
-willDeleteLater/
-.vs/
-windows/.vs
-windows/temp
+.vs/*
+windows/.vs/*
+windows/temp/*
 tags
