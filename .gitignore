@@ -61,5 +61,5 @@ dkms.conf
 #IDE Junk
 .vs/*
 windows/.vs/*
-windows/temp/*
+windows/tmp/*
 tags
