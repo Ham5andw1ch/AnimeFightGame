@@ -246,16 +246,19 @@ void rebind(int player, enum ButtonName keybind)
 
 int joyEvent(void* userdata, SDL_Event* e)
 {
+    int ret = 0;
     if(e->type == SDL_KEYDOWN || e->type == SDL_KEYUP)
-        updateStateKey(&e->key);
+        ret = updateStateKey(&e->key);
     if(e->type == SDL_JOYAXISMOTION)
-        updateStateAxi(&e->jaxis);
+        ret = updateStateAxi(&e->jaxis);
     if(e->type == SDL_JOYHATMOTION)
-        updateStateHat(&e->jhat);
+        ret = updateStateHat(&e->jhat);
     if(e->type == SDL_JOYBUTTONDOWN || e->type == SDL_JOYBUTTONUP)
-        updateStateBut(&e->jbutton);
+        ret = updateStateBut(&e->jbutton);
     if(e->type == SDL_JOYDEVICEADDED || e->type == SDL_JOYDEVICEREMOVED)
-        updateStateDev(&e->jdevice);
+        ret = updateStateDev(&e->jdevice);
+
+    return ret;
 }
 
 void joyInit(void)
