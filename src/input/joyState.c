@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "SDL2/SDL.h"
 #include "global.h"
 #include "settings.h"
