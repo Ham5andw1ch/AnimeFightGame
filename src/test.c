@@ -2,7 +2,7 @@
 #include "SDL2/SDL.h"
 #include "global.h"
 #include "joyState.h"
-#include "parser.h"
+#include "parse.h"
 #include "settings.h"
 
 void printEventTypes()
