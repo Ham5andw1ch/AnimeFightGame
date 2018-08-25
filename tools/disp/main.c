@@ -39,7 +39,7 @@ int main(int argc, char** argv)
             g = pal->srgb[spr->colors[row * spr->width + col].color].green;
             b = pal->srgb[spr->colors[row * spr->width + col].color].blue;
             a = spr->colors[row * spr->width + col].alpha;
-            printf("%d, %d: (%x, %x, %x, %x)\n", col, row, r, g, b, a);
+          //printf("%d, %d: (%x, %x, %x, %x)\n", col, row, r, g, b, a);
             SDL_SetRenderDrawColor(rend, r, g, b, a);
             SDL_RenderDrawPoint(rend, col, row);
         }
