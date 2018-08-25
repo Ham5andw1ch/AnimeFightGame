@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <parse.h>
 // Type that holds a queue of length queueLength. Used for storing input arrays.
 typedef struct {
     int head;
@@ -98,10 +98,11 @@ void add(uint8_t inputs[], queue_t* player)
             player->inputs[player->head] = inputs;
             player->tail = player->head;
         }
+	SDL_UnlockMutex(player->queueMutex);
     } else {
         fprintf(stderr, "Couldn't lock mutex\n");
     }
-    SDL_UnlockMutex(player->queueMutex);
+    
 }
 
 // Removes the element at the head location.
@@ -111,9 +112,9 @@ uint8_t* pop(queue_t* player)
         uint8_t* temp = player->inputs[player->head];
         player->inputs[player->head] = NULL;
         player->head = mod((player->head + 1), QueueLength);
+	SDL_UnlockMutex(player->queueMutex);
         return temp;
     }
-    SDL_UnlockMutex(player->queueMutex);
 }
 
 // Returns the element at the head location
@@ -132,8 +133,8 @@ void removeTail(queue_t* player)
             player->inputs[player->tail] = NULL;
             player->tail = mod((player->tail - 1), QueueLength);
         }
-    }
     SDL_UnlockMutex(player->queueMutex);
+    }
 }
 // Input: uint8_t array of an input in anime notation with the first element
 // being the length of the input, player input buffer
@@ -179,7 +180,8 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 if (possibleInputs[yPos][xPos] == 5 && input[currentIndex] != possibleInputs[yPos][xPos]) {
                     fiveCount++;
                     if (fiveCount >= FiveLimit) {
-                        return 0;
+                        SDL_UnlockMutex(player->queueMutex);
+			return 0;
                     }
                     // Wasn't a five or five was needed.
                 } else {
@@ -197,8 +199,8 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 }
             }
         }
-    }
     SDL_UnlockMutex(player->queueMutex);
+    }
     // Input wasn't found until now. Just return 0.
     return 0;
 }
