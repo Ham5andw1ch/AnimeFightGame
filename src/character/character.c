@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <character.h>
 
 
 void changeState(char_t* character, int state){

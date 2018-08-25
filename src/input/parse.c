@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <parse.h>
 // Type that holds a queue of length queueLength. Used for storing input arrays.
 typedef struct {
     int head;
