@@ -16,7 +16,7 @@
     #define errprint(...) do{}while(0)
 #endif
 
-typedef uint_fast8_t bool;
+typedef uint8_t bool;
 #define true 1
 #define false 0
 
