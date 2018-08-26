@@ -6,8 +6,8 @@
 #define SPRITE_MAGIC "AnImAgE2" 
 #define PALETTE_MAGIC "AnPaLTt2"
 
-#define MAX_WIDTH 7800
-#define MAX_HEIGHT 200
+#define MAX_WIDTH 8000
+#define MAX_HEIGHT 8000
 
 struct sprite
 {
