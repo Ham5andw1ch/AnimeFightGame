@@ -16,6 +16,9 @@
     #define errprint(...) do{}while(0)
 #endif
 
+#define xstr(s) str(s)
+#define str(s) #s
+
 typedef uint8_t bool;
 #define true 1
 #define false 0
