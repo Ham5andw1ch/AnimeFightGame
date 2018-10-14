@@ -55,13 +55,13 @@ void destroyBuffers()
 // Add a new input to the player's queue, deleting the input
 void add(uint8_t inputs[], queue_t* player)
 {
-    
+
     for (int i = 3; i > 0; i--) {
         //Fix A using macros
         if (inputs[BUTTON_A] == i || inputs[MACRO_AC] == i || inputs[MACRO_AB] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_A] = i;
         }
-         //Fix B using macros
+        //Fix B using macros
         if (inputs[BUTTON_B] == i || inputs[MACRO_AB] == i || inputs[MACRO_BD] == i || inputs[MACRO_ABCD] == i) {
             inputs[BUTTON_B] = i;
         }
@@ -98,11 +98,11 @@ void add(uint8_t inputs[], queue_t* player)
             player->inputs[player->head] = inputs;
             player->tail = player->head;
         }
-	SDL_UnlockMutex(player->queueMutex);
+        SDL_UnlockMutex(player->queueMutex);
     } else {
         fprintf(stderr, "Couldn't lock mutex\n");
     }
-    
+
 }
 
 // Removes the element at the head location.
@@ -112,8 +112,13 @@ uint8_t* pop(queue_t* player)
         uint8_t* temp = player->inputs[player->head];
         player->inputs[player->head] = NULL;
         player->head = mod((player->head + 1), QueueLength);
-	SDL_UnlockMutex(player->queueMutex);
+        SDL_UnlockMutex(player->queueMutex);
         return temp;
+    }
+    else
+    {
+        errprint(__FILE__" - "xstr(__LINE__)": %s", SDL_GetError());
+        return NULL;
     }
 }
 
@@ -133,7 +138,11 @@ void removeTail(queue_t* player)
             player->inputs[player->tail] = NULL;
             player->tail = mod((player->tail - 1), QueueLength);
         }
-    SDL_UnlockMutex(player->queueMutex);
+        SDL_UnlockMutex(player->queueMutex);
+    }
+    else
+    {
+        errprint(__FILE__" - "xstr(__LINE__)": %s", SDL_GetError());
     }
 }
 // Input: uint8_t array of an input in anime notation with the first element
@@ -152,7 +161,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
 
         // Scan the entire buffer
         for (int i = player->head; i != player->tail;
-             i = mod((i + 1), QueueLength)) {
+                i = mod((i + 1), QueueLength)) {
             if (player->inputs[i][ButtonCount + 1] == 1 && !flag) {
                 return 0;
             } else {
@@ -181,7 +190,7 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                     fiveCount++;
                     if (fiveCount >= FiveLimit) {
                         SDL_UnlockMutex(player->queueMutex);
-			return 0;
+                        return 0;
                     }
                     // Wasn't a five or five was needed.
                 } else {
@@ -199,7 +208,11 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
                 }
             }
         }
-    SDL_UnlockMutex(player->queueMutex);
+        SDL_UnlockMutex(player->queueMutex);
+    }
+    else
+    {
+        errprint(__FILE__" - "xstr(__LINE__)": %s", SDL_GetError());
     }
     // Input wasn't found until now. Just return 0.
     return 0;
@@ -211,20 +224,20 @@ void parserUpdate()
     uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
     sp1 = joyState(0, sp1);
     dbgprint("[%d %d %d %d %d %d %d %d %d %d %d %d]\t", sp1[0], sp1[1],
-        sp1[2], sp1[3], sp1[4], sp1[5],
-       sp1[6], sp1[7], sp1[8], sp1[9],
-       sp1[10], sp1[11]);
+            sp1[2], sp1[3], sp1[4], sp1[5],
+            sp1[6], sp1[7], sp1[8], sp1[9],
+            sp1[10], sp1[11]);
     uint8_t* sp2 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
     add(joyState(0, sp1), &Queues[0]);
     add(joyState(1, sp2), &Queues[1]);
     uint8_t testInput[] = { 3, 2, 3, 6 };
     dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1],
-        peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],
-        peek(Queues)[6], peek(Queues)[7]);
+            peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],
+            peek(Queues)[6], peek(Queues)[7]);
     dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Queues + 1)[0],
-        peek(Queues + 1)[1], peek(Queues + 1)[2], peek(Queues + 1)[3],
-        peek(Queues + 1)[4], peek(Queues + 1)[5], peek(Queues + 1)[6],
-        peek(Queues + 1)[7]);
+            peek(Queues + 1)[1], peek(Queues + 1)[2], peek(Queues + 1)[3],
+            peek(Queues + 1)[4], peek(Queues + 1)[5], peek(Queues + 1)[6],
+            peek(Queues + 1)[7]);
 
     if (searchInput(testInput, &Queues[0], 0)) {
         printf("%s", "true\n");
