@@ -118,6 +118,7 @@ int ff2anI(struct farbfeld* in, struct sprite* sout, struct palette* pout)
             sout->colors[r * in->width + c].alpha = color16to8(in->rgba[r * in->width + c].alpha);
         }
     }
+    return 0;
 }
 
 int saveSprite(char* filename, struct sprite* spr)
@@ -139,6 +140,7 @@ int saveSprite(char* filename, struct sprite* spr)
         fwrite(&(spr->colors[i].alpha), 1, 1, out);
     }
     fclose(out);
+    return 0;
 }
 
 int savePalette(char* filename, struct palette* pal)
@@ -159,4 +161,5 @@ int savePalette(char* filename, struct palette* pal)
         fwrite(&(pal->srgb[i].blue), 1, 1, out);
     }
     fclose(out);
+    return 0;
 }
