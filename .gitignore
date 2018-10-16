@@ -63,3 +63,5 @@ dkms.conf
 windows/.vs/*
 windows/tmp/*
 tags
+*.swp
+.DS_STORE

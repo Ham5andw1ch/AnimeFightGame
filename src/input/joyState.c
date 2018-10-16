@@ -17,6 +17,8 @@ SDL_Joystick *joystick[MaxJoysticks];
 uint8_t rawstate[PlayerCount][InputCount];
 uint8_t joystate[PlayerCount][InputCount];
 
+SDL_mutex* joylock;
+
 int addJoy(int index)
 {
     for(int i = 0; i < MaxJoysticks; ++i)
@@ -247,22 +249,44 @@ void rebind(int player, enum ButtonName keybind)
 int joyEvent(void* userdata, SDL_Event* e)
 {
     int ret = 0;
-    if(e->type == SDL_KEYDOWN || e->type == SDL_KEYUP)
-        ret = updateStateKey(&e->key);
-    if(e->type == SDL_JOYAXISMOTION)
-        ret = updateStateAxi(&e->jaxis);
-    if(e->type == SDL_JOYHATMOTION)
-        ret = updateStateHat(&e->jhat);
-    if(e->type == SDL_JOYBUTTONDOWN || e->type == SDL_JOYBUTTONUP)
-        ret = updateStateBut(&e->jbutton);
-    if(e->type == SDL_JOYDEVICEADDED || e->type == SDL_JOYDEVICEREMOVED)
-        ret = updateStateDev(&e->jdevice);
+    uint32_t et = e->type;
+    if(et == SDL_KEYDOWN || et == SDL_KEYUP || et == SDL_JOYAXISMOTION || et == SDL_JOYHATMOTION ||
+            et == SDL_JOYBUTTONDOWN || et == SDL_JOYBUTTONUP || et == SDL_JOYDEVICEADDED ||
+            et == SDL_JOYDEVICEREMOVED)
+    {
+        if(SDL_LockMutex(joylock) == 0)
+        {
+            if(e->type == SDL_KEYDOWN || e->type == SDL_KEYUP)
+                ret = updateStateKey(&e->key);
+            if(e->type == SDL_JOYAXISMOTION)
+                ret = updateStateAxi(&e->jaxis);
+            if(e->type == SDL_JOYHATMOTION)
+                ret = updateStateHat(&e->jhat);
+            if(e->type == SDL_JOYBUTTONDOWN || e->type == SDL_JOYBUTTONUP)
+                ret = updateStateBut(&e->jbutton);
+            if(e->type == SDL_JOYDEVICEADDED || e->type == SDL_JOYDEVICEREMOVED)
+                ret = updateStateDev(&e->jdevice);
+            SDL_UnlockMutex(joylock);
+        }
+        else
+        {
+            errprint(__FILE__" - Line "xstr(__LINE__)": %s", SDL_GetError());
+            return 1;
+        }
+    }
 
     return ret;
 }
 
 void joyInit(void)
 {
+    joylock = SDL_CreateMutex();
+    if(!joylock)
+    {
+        errprint(__FILE__" - Line "xstr(__LINE__)": %s", SDL_GetError());
+        exit(1);
+    }
+
     for(int i = 0; i < SDL_NumJoysticks() && i < MaxJoysticks; ++i)
     {
         dbgprint("Joystick %d Added\n", i);
@@ -278,15 +302,23 @@ void joyInit(void)
 void joyUpdate(void)
 {
     // Remove the one-frame button states
-    for(int p = 0; p < PlayerCount; ++p)
+    if(SDL_LockMutex(joylock) == 0)
     {
-        for(int i = 0; i < InputCount; ++i)
+        for(int p = 0; p < PlayerCount; ++p)
         {
-            if(rawstate[p][i] == 1)
-                joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
-            else
-                joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
+            for(int i = 0; i < InputCount; ++i)
+            {
+                if(rawstate[p][i] == 1)
+                    joystate[p][i] = joystate[p][i] == 0 ? 1 : 2;
+                else
+                    joystate[p][i] = joystate[p][i] == 2 ? 3 : 0;
+            }
         }
+        SDL_UnlockMutex(joylock);
+    }
+    else
+    {
+        errprint(__FILE__" - Line "xstr(__LINE__)": %s", SDL_GetError());
     }
 
     //dbgprint("[%d %d %d %d %d %d %d %d]\t", joystatep1[0], joystatep1[1], joystatep1[2],
@@ -309,6 +341,15 @@ void joyRip(void)
 
 uint8_t* joyState(int player, uint8_t* out)
 {
-    memcpy(out, joystate[player], InputCount * sizeof(*out));
-    return out;
+    if(SDL_LockMutex(joylock) == 0)
+    {
+        memcpy(out, joystate[player], InputCount * sizeof(*out));
+        SDL_UnlockMutex(joylock);
+        return out;
+    }
+    else
+    {
+        errprint(__FILE__" - Line "xstr(__LINE__)": %s", SDL_GetError());
+        return NULL;
+    }
 }
