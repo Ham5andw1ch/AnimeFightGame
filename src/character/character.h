@@ -10,9 +10,10 @@ typedef struct {
 	int stateFrames;	//How long the character is in this state (-1 if in state indefinitely).
 	int nextState;		//State to jump to when stateFrames = 0;
 	int numStates;		//How many states the player has total;
-	void (*updates[])();	//Update functions for each state
+
 	int* hitboxes[2];	//Currently active hitboxes
 	int* hurtboxes[2];	//Currently active hurtboxes
+	void (*updates[])();	//Update functions for each state
 } char_t;
 
 void damage(char_t* character, int health);

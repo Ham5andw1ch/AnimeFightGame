@@ -4,124 +4,101 @@
 #include "joyState.h"
 #include "parse.h"
 #include "settings.h"
-
-void printEventTypes()
-{
-    dbgprint("SDL_QUIT: %d\n", SDL_QUIT);
-    dbgprint("SDL_APP_TERMINATING: %d\n", SDL_APP_TERMINATING);
-    dbgprint("SDL_APP_LOWMEMORY: %d\n", SDL_APP_LOWMEMORY);
-    dbgprint("SDL_APP_WILLENTERBACKGROUND: %d\n", SDL_APP_WILLENTERBACKGROUND);
-    dbgprint("SDL_APP_DIDENTERBACKGROUND: %d\n", SDL_APP_DIDENTERBACKGROUND);
-    dbgprint("SDL_APP_WILLENTERFOREGROUND: %d\n", SDL_APP_WILLENTERFOREGROUND);
-    dbgprint("SDL_APP_DIDENTERFOREGROUND: %d\n", SDL_APP_DIDENTERFOREGROUND);
-
-    dbgprint("SDL_WINDOWEVENT: %d\n", SDL_WINDOWEVENT);
-    dbgprint("SDL_SYSWMEVENT: %d\n", SDL_SYSWMEVENT);
-
-    dbgprint("SDL_KEYDOWN: %d\n", SDL_KEYDOWN);
-    dbgprint("SDL_KEYUP: %d\n", SDL_KEYUP);
-    dbgprint("SDL_TEXTEDITING: %d\n", SDL_TEXTEDITING);
-    dbgprint("SDL_TEXTINPUT: %d\n", SDL_TEXTINPUT);
-    dbgprint("SDL_KEYMAPCHANGED: %d\n", SDL_KEYMAPCHANGED);
-
-    dbgprint("SDL_MOUSEMOTION: %d\n", SDL_MOUSEMOTION);
-    dbgprint("SDL_MOUSEBUTTONDOWN: %d\n", SDL_MOUSEBUTTONDOWN);
-    dbgprint("SDL_MOUSEBUTTONUP: %d\n", SDL_MOUSEBUTTONUP);
-    dbgprint("SDL_MOUSEWHEEL: %d\n", SDL_MOUSEWHEEL);
-
-    dbgprint("SDL_JOYAXISMOTION: %d\n", SDL_JOYAXISMOTION);
-    dbgprint("SDL_JOYBALLMOTION: %d\n", SDL_JOYBALLMOTION);
-    dbgprint("SDL_JOYHATMOTION: %d\n", SDL_JOYHATMOTION);
-    dbgprint("SDL_JOYBUTTONDOWN: %d\n", SDL_JOYBUTTONDOWN);
-    dbgprint("SDL_JOYBUTTONUP: %d\n", SDL_JOYBUTTONUP);
-    dbgprint("SDL_JOYDEVICEADDED: %d\n", SDL_JOYDEVICEADDED);
-    dbgprint("SDL_JOYDEVICEREMOVED: %d\n", SDL_JOYDEVICEREMOVED);
-
-    dbgprint("SDL_CONTROLLERAXISMOTION: %d\n", SDL_CONTROLLERAXISMOTION);
-    dbgprint("SDL_CONTROLLERBUTTONDOWN: %d\n", SDL_CONTROLLERBUTTONDOWN);
-    dbgprint("SDL_CONTROLLERBUTTONUP: %d\n", SDL_CONTROLLERBUTTONUP);
-    dbgprint("SDL_CONTROLLERDEVICEADDED: %d\n", SDL_CONTROLLERDEVICEADDED);
-    dbgprint("SDL_CONTROLLERDEVICEREMOVED: %d\n", SDL_CONTROLLERDEVICEREMOVED);
-    dbgprint("SDL_CONTROLLERDEVICEREMAPPED: %d\n", SDL_CONTROLLERDEVICEREMAPPED);
-
-    dbgprint("SDL_FINGERDOWN: %d\n", SDL_FINGERDOWN);
-    dbgprint("SDL_FINGERUP: %d\n", SDL_FINGERUP);
-    dbgprint("SDL_FINGERMOTION: %d\n", SDL_FINGERMOTION);
-
-    dbgprint("SDL_DOLLARGESTURE: %d\n", SDL_DOLLARGESTURE);
-    dbgprint("SDL_DOLLARRECORD: %d\n", SDL_DOLLARRECORD);
-    dbgprint("SDL_MULTIGESTURE: %d\n", SDL_MULTIGESTURE);
-
-    dbgprint("SDL_CLIPBOARDUPDATE: %d\n", SDL_CLIPBOARDUPDATE);
-
-    dbgprint("SDL_DROPFILE: %d\n", SDL_DROPFILE);
-    dbgprint("SDL_DROPTEXT: %d\n", SDL_DROPTEXT);
-    dbgprint("SDL_DROPBEGIN: %d\n", SDL_DROPBEGIN);
-    dbgprint("SDL_DROPCOMPLETE: %d\n", SDL_DROPCOMPLETE);
-
-    dbgprint("SDL_AUDIODEVICEADDED: %d\n", SDL_AUDIODEVICEADDED);
-    dbgprint("SDL_AUDIODEVICEREMOVED: %d\n", SDL_AUDIODEVICEREMOVED);
-
-    dbgprint("SDL_RENDER_TARGETS_RESET: %d\n", SDL_RENDER_TARGETS_RESET);
-    dbgprint("SDL_RENDER_DEVICE_RESET: %d\n", SDL_RENDER_DEVICE_RESET);
-
-    dbgprint("SDL_USEREVENT: %d\n", SDL_USEREVENT);
-    dbgprint("SDL_LASTEVENT: %d\n", SDL_LASTEVENT);
-}
-
-//fish
-//SDL_Joystick *joysticks[50];
-//int nextJoy = 0;
-//
-//int joystickWatch(void* userdata, SDL_Event* event)
-//{
-//    switch(event->type)
-//    {
-//    case SDL_JOYAXISMOTION:
-//        dbgprint("%d: Axis %d on Joystick %d: %d\n", event->jaxis.timestamp,
-//                event->jaxis.axis, event->jaxis.which, event->jaxis.value);
-//        break;
-//    case SDL_JOYBALLMOTION:
-//        dbgprint("%d: Trackball %d on Joystick %d: (%d, %d)\n", event->jball.timestamp,
-//                event->jball.ball, event->jball.which, event->jball.xrel,
-//                event->jball.yrel);
-//        break;
-//    case SDL_JOYHATMOTION:
-//        dbgprint("%d: POV Hat %d on Joystick %d: %d\n", event->jhat.timestamp,
-//                event->jhat.hat, event->jhat.which, event->jhat.value);
-//        break;
-//    case SDL_JOYBUTTONDOWN:
-//        dbgprint("%d: Button %d down on Joystick %d: %d\n", event->jbutton.timestamp,
-//                event->jbutton.button, event->jbutton.which, event->jbutton.state);
-//        break;
-//    case SDL_JOYBUTTONUP:
-//        dbgprint("%d: Button %d up on Joystick %d: %d\n", event->jbutton.timestamp,
-//                event->jbutton.button, event->jbutton.which, event->jbutton.state);
-//        break;
-//    case SDL_JOYDEVICEADDED:
-//        dbgprint("Joystick %d Added\n", event->jdevice.which);
-//        joysticks[nextJoy++] = SDL_JoystickOpen(event->jdevice.which);
-//        break;
-//    case SDL_JOYDEVICEREMOVED:
-//        dbgprint("Joystick %d Removed\n", event->jdevice.which);
-//        SDL_JoystickClose(SDL_JoystickFromInstanceID(event->jdevice.which));
-//        joysticks[event->jdevice.which] = NULL;
-//        break;
-//    }
-//}
-
+#include "animage.h"
 Uint64 NOW = 0;
 Uint64 LAST = 0;
 double deltaTime = 0.0;
+
+
+
+//Main Game Loop
 int main(int argc, char **argv)
 {
+     //Check if we have the right number of args
+    if(argc < 5)
+    {
+        fprintf(stderr, "Usage: %s [animage sprite] [animage palette] [Num Frames] [animage palette]\n", argv[0]);
+        return 1;
+    }   
+    
+    //Initialize SDL
     if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK))
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Unable to initialize SDL: %s", SDL_GetError());
         return 1;
-    }
+    }	
+	
 
-    SDL_Window *window = SDL_CreateWindow("Anime Fight Game Test Main", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_RESIZABLE);
+    //Animage initialization
+    struct sprite* spr = malloc(sizeof(*spr));
+    struct palette* pal = malloc(sizeof(*pal));
+    struct palette* pal1 = malloc(sizeof(*pal1));
+    int ret;
+    if((ret = readSprite(argv[1], spr)))
+        return ret;
+    if((ret = readPalette(argv[2], pal)))
+        return ret;
+    if((ret = readPalette(argv[4], pal1)))
+        return ret;
+    //SDL Boilerplate
+    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    
+    //Pixel pointers for our images
+    uint8_t* pixelsA = malloc(4* spr->height*spr->width * sizeof(*pixelsA));
+    uint8_t* pixelsB = malloc(4* spr->height*spr->width * sizeof(*pixelsB));
+    
+
+    int depth, pitch;
+    depth = 32;
+    pitch = 4*spr->width;
+    
+    
+    int i =0;
+    //Fill pixels with the actual sprite data
+    for(int row = 0; row < spr->height; ++row)
+    {	
+        for(int col = 0; col < spr->width; ++col)
+        {
+            uint8_t r,g,b,a;
+            r = pal->srgb[spr->colors[row * spr->width + col].color].red;
+            g = pal->srgb[spr->colors[row * spr->width + col].color].green;
+            b = pal->srgb[spr->colors[row * spr->width + col].color].blue;
+            a = spr->colors[row * spr->width + col].alpha;
+            pixelsA[i] =r;
+            pixelsA[i+1] =g;
+            pixelsA[i+2] =b;
+            pixelsA[i+3] =a;
+//          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+	    i+=4;
+        }
+    }
+    i = 0;
+    //Fill pixels with the actual sprite data
+    for(int row = 0; row < spr->height; ++row)
+    {	
+        for(int col = 0; col < spr->width; ++col)
+        {
+            uint8_t r,g,b,a;
+            r = pal1->srgb[spr->colors[row * spr->width + col].color].red;
+            g = pal1->srgb[spr->colors[row * spr->width + col].color].green;
+            b = pal1->srgb[spr->colors[row * spr->width + col].color].blue;
+            a = spr->colors[row * spr->width + col].alpha;
+            pixelsB[i] =r;
+            pixelsB[i+1] =g;
+            pixelsB[i+2] =b;
+            pixelsB[i+3] =a;
+//          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+	    i+=4;
+        }
+    }
+    int num = atoi(argv[3]);
+    SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixelsA, spr->width, spr->height,depth, pitch, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    SDL_Surface* surface1 = SDL_CreateRGBSurfaceFrom(pixelsB, spr->width, spr->height,depth, pitch, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+
+
+
+    SDL_Window *window = SDL_CreateWindow("Anime Fight Game Test Main", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+    
     if(window == NULL)
     {
         errprint("Could not create window: %s\n", SDL_GetError());
@@ -130,53 +107,92 @@ int main(int argc, char **argv)
 
     joyInit();
     initQueues();
-
-    //  for(int i = 0; i < SDL_NumJoysticks(); ++i)
-    //  {
-    //      dbgprint("Joystick %d Added\n", i);
-    //      if(!(joysticks[nextJoy++] = SDL_JoystickOpen(i)))
-    //      {
-    //          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't open Joystick %d: %s\n", i,
-    //                  SDL_GetError());
-    //      }
-    //  }
-
-    //  SDL_AddEventWatch(joystickWatch, NULL);
-
-    //  printEventTypes();
-
+    int y = 0;
+    int x = 0;
+    int button = 1;
+    int flag = 0;
+    i = 0;
     while(1)
     {
         LAST = NOW;
         NOW = SDL_GetPerformanceCounter();
         deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
-        //dbgprint("%d\t%d\t%f\n", LAST, NOW, deltaTime*.001);
         if( deltaTime * .001 > (double)1/(double) FPS){
             deltaTime = 0;
             joyUpdate();
             parserUpdate();
-            SDL_Event e;
-            if(SDL_PollEvent(&e))
-            {
-                //          dbgprint("Event Type %d\n", e.type);
-                if(e.type == SDL_QUIT)
-                    break;
-                if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_r)
-                    rebind(0, DIR_UP);
+            uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
+            sp1 = joyState(0, sp1);
+            if(flag!=1){
+                i = 0;
+                uint8_t input[] = {3,2,3,6};
+                if(sp1[5]==1){
+                    button = 2;
+                    flag = searchInputHelper(&input,0,0);
+                }else if(sp1[4]==1)
+                {
+                    button = 1;
+                    flag = searchInputHelper(&input,0,0);
+                }
+            }
+            dbgprint("[%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d]\n", x, y, flag, i, sp1[0], sp1[1],
+                sp1[2], sp1[3], sp1[4], sp1[5],
+                sp1[6], sp1[7], sp1[8], sp1[9],
+                sp1[10], sp1[11]);
+ 
+            if(sp1[1]==1||sp1[1]==2){
+                y++;
+            }
+            if(sp1[0]==1||sp1[0]==2){
+                y--;
+            }
+            if(sp1[2]==1||sp1[2]==2){
+                x--;
+            }
+            if(sp1[3]==1||sp1[3]==2){
+                x++;
+            }
+            
+            SDL_Rect dest;
+            dest.x =x;
+            dest.y =y;
+            dest.w = spr->width;
+            dest.h = spr->height;
+    
+            
+            SDL_Rect src;
+            src.x =(spr->width/num)*i;
+            src.y =0;
+            src.w = spr->width/num;
+            src.h = spr->height;
+
+            SDL_FillRect(SDL_GetWindowSurface(window), NULL, 0xED9564FF);
+            if(button == 1)
+                SDL_BlitSurface(surface, &src, SDL_GetWindowSurface(window), &dest);
+            if(button == 2)
+                SDL_BlitSurface(surface1, &src, SDL_GetWindowSurface(window), &dest);
+            //  SDL_RenderPresent(rend);
+            SDL_UpdateWindowSurface(window);
+            i++;
+            if(i ==num){
+                i=0;
+                flag = 0;
             }
         }
+            
+            
+        SDL_Event e;
+        if(SDL_PollEvent(&e))
+        {
+            if(e.type == SDL_QUIT)
+                break;
+            if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_r)
+                rebind(0, DIR_UP);
+        }
+        
     }
-
+    
     joyRip();
-
-    //  for(int i = 0; i < nextJoy; ++i)
-    //  {
-    //      if(joysticks[i] != NULL && SDL_JoystickGetAttached(joysticks[i]))
-    //      {
-    //          dbgprint("Joystick %d Removed\n", SDL_JoystickInstanceID(joysticks[i]));
-    //          SDL_JoystickClose(joysticks[i]);
-    //      }
-    //  }
 
     SDL_DestroyWindow(window);
     SDL_Quit();

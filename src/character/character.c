@@ -18,6 +18,6 @@ void damage(char_t* character, int health){
 	changeHealth(character, character->hp - health);
 }
 void Update(char_t* character){
-	character->updates[character->states]();
+	character->updates[character->state]();
 } 
 

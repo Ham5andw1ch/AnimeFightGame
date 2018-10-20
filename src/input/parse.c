@@ -218,29 +218,35 @@ uint8_t searchInput(uint8_t* input, queue_t* player, uint8_t flag)
     return 0;
 }
 
+uint8_t searchInputHelper(uint8_t* input, uint8_t index, uint8_t flag){
+        return searchInput(input,&Queues[index],flag);
+}
+
 // My update function.
 void parserUpdate()
 {
     uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
     sp1 = joyState(0, sp1);
-    dbgprint("[%d %d %d %d %d %d %d %d %d %d %d %d]\t", sp1[0], sp1[1],
-            sp1[2], sp1[3], sp1[4], sp1[5],
-            sp1[6], sp1[7], sp1[8], sp1[9],
-            sp1[10], sp1[11]);
-    uint8_t* sp2 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
+ // dbgprint("[%d %d %d %d %d %d %d %d %d %d %d %d]\t", sp1[0], sp1[1],
+ //         sp1[2], sp1[3], sp1[4], sp1[5],
+ //         sp1[6], sp1[7], sp1[8], sp1[9],
+ //         sp1[10], sp1[11]);
+    uint8_t* sp2 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp2));
+    sp2 = joyState(1, sp2);
     add(joyState(0, sp1), &Queues[0]);
     add(joyState(1, sp2), &Queues[1]);
-    uint8_t testInput[] = { 3, 2, 3, 6 };
-    dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1],
-            peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],
-            peek(Queues)[6], peek(Queues)[7]);
-    dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Queues + 1)[0],
-            peek(Queues + 1)[1], peek(Queues + 1)[2], peek(Queues + 1)[3],
-            peek(Queues + 1)[4], peek(Queues + 1)[5], peek(Queues + 1)[6],
-            peek(Queues + 1)[7]);
 
-    if (searchInput(testInput, &Queues[0], 0)) {
-        printf("%s", "true\n");
-    } else
-        printf("%s", "false\n");
+ //   uint8_t testInput[] = { 3, 2, 3, 6 };
+ // dbgprint("[%d %d %d %d %d %d %d %d]\t", peek(Queues)[0], peek(Queues)[1],
+ //        peek(Queues)[2], peek(Queues)[3], peek(Queues)[4], peek(Queues)[5],
+ //         peek(Queues)[6], peek(Queues)[7]);
+ // dbgprint("[%d %d %d %d %d %d %d %d]\n", peek(Queues + 1)[0],
+ //         peek(Queues + 1)[1], peek(Queues + 1)[2], peek(Queues + 1)[3],
+ //         peek(Queues + 1)[4], peek(Queues + 1)[5], peek(Queues + 1)[6],
+ //         peek(Queues + 1)[7]);
+
+ // if (searchInput(testInput, &Queues[0], 0)) {
+ //     printf("%s", "true\n");
+ // } else
+ //     printf("%s", "false\n");
 }
