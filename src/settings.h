@@ -6,7 +6,7 @@
 #define ButtonCount 8
 #define MacroCount 4
 
-#define QueueLength 30
+#define QueueLength 15
 #define FiveLimit 10
 #define FPS 60
 
