@@ -21,7 +21,10 @@ NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
 NK_API void                 nk_sdl_render(enum nk_anti_aliasing);
 NK_API void                 nk_sdl_shutdown(void);
 
-int run_nuklear(void (*script)(struct nk_context*));
+SDL_Window *win;
+int init_SDL(void);
+int quit_SDL(void);
+int run_nuklear(void (*script[])(struct nk_context*), int scriptc);
 
 #endif
 /*
@@ -152,6 +155,17 @@ nk_sdl_render(enum nk_anti_aliasing AA)
                 (GLint)((height - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * scale.y),
                 (GLint)(cmd->clip_rect.w * scale.x),
                 (GLint)(cmd->clip_rect.h * scale.y));
+
+        //  unsigned int x1 = cmd->clip_rect.x * scale.x;
+        //  unsigned int y1 = height - (cmd->clip_rect.y + cmd->clip_rect.h) * scale.y;
+        //  unsigned int x2 = x1 + cmd->clip_rect.w * scale.x;
+        //  unsigned int y2 = y1 + cmd->clip_rect.h * scale.y;
+        //  glBegin(GL_QUADS);
+        //  glTexCoord2f(0, 0); glVertex3f(x1, y1, 0);
+        //  glTexCoord2f(0, 1); glVertex3f(x1, y2, 0);
+        //  glTexCoord2f(1, 1); glVertex3f(x2, y2, 0);
+        //  glTexCoord2f(1, 0); glVertex3f(x2, y1, 0);
+        //  glEnd();
             glDrawElements(GL_TRIANGLES, (GLsizei)cmd->elem_count, GL_UNSIGNED_SHORT, offset);
             offset += cmd->elem_count;
         }
