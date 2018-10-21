@@ -33,5 +33,6 @@ struct palette
 
 int readSprite(char* filename, struct sprite* out);
 int readPalette(char* filename, struct palette* out);
+int savePalette(char* filename, struct palette* pal);
 
 #endif

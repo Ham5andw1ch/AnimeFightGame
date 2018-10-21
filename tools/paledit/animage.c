@@ -52,3 +52,24 @@ int readPalette(char* filename, struct palette* pal)
     fclose(in);
     return 0;
 }
+
+int savePalette(char* filename, struct palette* pal)
+{
+    FILE* out = fopen(filename, "w");
+    if(!out)
+    {
+        fprintf(stderr, "Can't open %s for write.\n", filename);
+        return 1;
+    }
+    
+    fwrite(pal->magic, 1, 8, out);
+    for(int i = 0; i < 256; ++i)
+    {
+        fwrite(&(pal->srgb[i].section), 1, 1, out);
+        fwrite(&(pal->srgb[i].red), 1, 1, out);
+        fwrite(&(pal->srgb[i].green), 1, 1, out);
+        fwrite(&(pal->srgb[i].blue), 1, 1, out);
+    }
+    fclose(out);
+    return 0;
+}

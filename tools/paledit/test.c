@@ -22,6 +22,8 @@ struct sprite spr;
 struct palette pal;
 uint8_t *pixels;
 
+char* saveas;
+
 SDL_Window *sprWin;
 
 struct nk_color pl2nk_color(int i)
@@ -88,6 +90,7 @@ void palette(struct nk_context *ctx)
     if(nk_begin(ctx, "Palette", nk_rect(0, 0, 750, 528), NK_WINDOW_BACKGROUND))
     {
         static int index = 0;
+        static int labelTime = 0;
         nk_layout_row(ctx, NK_DYNAMIC, 480, 2, (float[]){.70, .30});
         if(nk_group_begin(ctx, "Color Palette", 0))
         {
@@ -117,6 +120,20 @@ void palette(struct nk_context *ctx)
                 pal.srgb[index].blue = col.b;
             }
 
+            if(labelTime)
+            {
+                labelTime = (labelTime + 1) % 100;
+                nk_label_wrap(ctx, "Saved...");
+            }
+            else
+                nk_label_wrap(ctx, "");
+
+            if(nk_button_label(ctx, "Save Palette"))
+            {
+                savePalette(saveas, &pal);
+                labelTime = 1;
+            }
+
             nk_group_end(ctx);
         }
 
@@ -131,6 +148,8 @@ int main(int argc, char** argv)
         fprintf(stderr, "Usage: %s <sprite> <palette> [<saveas>]\n", argv[0]);
         return 1;
     }
+
+    saveas = argv[argc - 1];
 
     int ret;
     if((ret = readSprite(argv[1], &spr)))
