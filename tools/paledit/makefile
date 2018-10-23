@@ -4,7 +4,7 @@ CFLAGS = -g
 LFLAGS = -framework SDL2 -framework OpenGL -lm
 else
 CFLAGS = -g $(shell sdl2-config --cflags)
-LFLAGS = $(shell sdl2-config --libs)
+LFLAGS = $(shell sdl2-config --libs) -lGL
 endif
 
 EXE = paledit
