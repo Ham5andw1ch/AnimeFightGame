@@ -246,7 +246,7 @@ void rebind(int player, enum ButtonName keybind)
     rebindButton = keybind;
 }
 
-int joyEvent(void* userdata, SDL_Event* e)
+int joyEvent(SDL_Event* e)
 {
     int ret = 0;
     uint32_t et = e->type;
@@ -293,14 +293,20 @@ void joyInit(void)
         addJoy(i);
     }
 
-    SDL_AddEventWatch(joyEvent, NULL);
     memset(joystick, (size_t)NULL, MaxJoysticks * sizeof(*joystick));
     memset(rawstate, 0, PlayerCount * InputCount * sizeof(**rawstate));
     memset(joystate, 0, PlayerCount * InputCount * sizeof(**joystate));
 }
 
-void joyUpdate(void)
+int joyUpdate(void)
 {
+    SDL_Event event;
+    while(SDL_PollEvent(&event))
+    {
+        if(event.type == SDL_QUIT) return 1;
+        joyEvent(&event);
+    }
+
     // Remove the one-frame button states
     if(SDL_LockMutex(joylock) == 0)
     {
@@ -325,6 +331,7 @@ void joyUpdate(void)
     //        joystatep1[3], joystatep1[4], joystatep1[5], joystatep1[6], joystatep1[7]); 
     //dbgprint("[%d %d %d %d %d %d %d %d]\n", joystatep2[0], joystatep2[1], joystatep2[2],
     //        joystatep2[3], joystatep2[4], joystatep2[5], joystatep2[6], joystatep2[7]); 
+    return 0;
 }
 
 void joyRip(void)

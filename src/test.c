@@ -119,7 +119,7 @@ int main(int argc, char **argv)
         deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
         if( deltaTime * .001 > (double)1/(double) FPS){
             deltaTime = 0;
-            joyUpdate();
+            if(joyUpdate() == 1) break;
             parserUpdate();
             uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
             sp1 = joyState(0, sp1);
@@ -180,16 +180,6 @@ int main(int argc, char **argv)
             }
         }
             
-            
-        SDL_Event e;
-        if(SDL_PollEvent(&e))
-        {
-            if(e.type == SDL_QUIT)
-                break;
-            if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_r)
-                rebind(0, DIR_UP);
-        }
-        
     }
     
     joyRip();
