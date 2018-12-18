@@ -7,6 +7,7 @@
 //  because this class simply handles the blitting.
 
 #include <stdio.h>
+#include <math.h>
 #include "SDL2/SDL.h"
 #include "global.h"
 #include "settings.h"
@@ -17,6 +18,8 @@ SDL_Surface *game_surface;
 SDL_Surface *ui_surface;
 
 SDL_Rect viewport;
+// used as a base case for recursive relative position calculation
+drawable_t treeRoot = { 0, 0, 0, 0, 0, 1, NULL, NULL };
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
     window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, 0);
@@ -46,7 +49,7 @@ int fillRect(uint32_t color){
 }
 
 int updateWindow(){
-    SDL_Surface window_surface = SDL_GetWindowSurface(window);
+    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
     SDL_Rect rect;
     rect.x=0;
     rect.y=0;
@@ -91,7 +94,53 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     return 0;
 }
 
-int insert(disp_node_t* node, disp_node_t* list){
+void absolutePos(drawable_t* drawable, int* x, int* y)
+{
+    if(drawable->calculated)
+    {
+        *x = drawable->cached_x;
+        *y = drawable->cached_y;
+        return;
+    }
+
+    absolutePos(drawable->parent, x, y);
+    *x += drawable->x;
+    *y += drawable->y;
+    drawable->cached_x = *x;
+    drawable->cached_y = *y;
+    drawable->calculated = 1;
+}
+
+void drawGame()
+{
+    // iterate through the game displayables, calculating their absolute position and blitting them
+    // to the game surface
+    for(disp_node_t* node = game_displayables; node != NULL; node = node->next)
+    {
+        int x, y;
+        absolutePos(node->drawable, &x, &y);
+        blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame);
+    }
+
+    // reset the calculated bit for the next frame
+    for(disp_node_t* node = game_displayables; node != NULL; node = node->next)
+    {
+        node->drawable->calculated = 0;
+    }
+}
+
+void drawUI()
+{
+    for(disp_node_t* node = ui_displayables; node != NULL; node = node->next)
+    {
+        SDL_Rect pos;
+        pos.x = node->drawable->x;
+        pos.y = node->drawable->y;
+        SDL_BlitSurface(node->drawable->sprite->surface, NULL, ui_surface, &pos);
+    }
+}
+
+int insertDispNode(disp_node_t* node, disp_node_t* list){
     disp_node_t** pointer = &list;
     uint_fast8_t done = 0;
     while(!done){
@@ -103,12 +152,13 @@ int insert(disp_node_t* node, disp_node_t* list){
             (*pointer) = node;
             done = 1;
         }else{
-            pointer = (*pointer)->next;
+            pointer = &(*pointer)->next;
         }
     }
+    return 0;
 }
 
-disp_node_t* remove(uint64_t id){
+disp_node_t* removeDispNode(uint64_t id, disp_node_t* list){
     disp_node_t** pointer = &list;
     while(true){
         if(*pointer == NULL){
@@ -119,7 +169,7 @@ disp_node_t* remove(uint64_t id){
             old->next = NULL;
             return old;
         }else{
-            pointer = (*pointer)->next;
+            pointer = &(*pointer)->next;
         }
     }
 }

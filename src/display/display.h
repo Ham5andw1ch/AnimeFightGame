@@ -12,6 +12,7 @@ typedef struct{
 typedef struct drawable_t{
     uint16_t x;
     uint16_t y;
+    uint8_t current_frame;
     uint16_t cached_x;
     uint16_t cached_y;
     uint_fast8_t calculated;    
@@ -26,8 +27,11 @@ typedef struct disp_node_t{
     struct disp_node_t* next;
 }disp_node_t;
 
-int insert(disp_node_t from, disp_node_t to);
-int remove(uint64_t id);
+disp_node_t* game_displayables;
+disp_node_t* ui_displayables;
+
+int insertDispNode(disp_node_t* node, disp_node_t* list);
+disp_node_t* removeDispNode(uint64_t id, disp_node_t* list);
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name);
 
@@ -35,10 +39,10 @@ int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame);
 
 int fillRect(uint32_t color);
 
-disp_node_t* head;
-
 int updateWindow();
 int updateViewport();
+void drawGame();
+void drawUI();
 
 void destroyWindow();
 
