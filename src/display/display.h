@@ -2,8 +2,10 @@
 #define DISPLAY_H_
 
 uint64_t accumulator;
-
-
+enum layer{ 
+    UI;
+    GAME;
+}
 typedef struct{
     uint8_t frames;
     SDL_Surface* surface;
@@ -18,6 +20,7 @@ typedef struct drawable_t{
     uint_fast8_t calculated;    
     sprite_t* sprite;
     struct drawable_t* parent;
+    uint16_t layer;
 }drawable_t;
 
 typedef struct disp_node_t{
@@ -35,6 +38,8 @@ disp_node_t* removeDispNode(uint64_t id, disp_node_t* list);
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name);
 sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames);
+drawable_t* drawFromSprite(sprite_t* spr, int x, int y, drawable_t* parent, int layer);
+void freeSprite(sprite_t* sprite);
 int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame);
 
 int fillRect(uint32_t color);

@@ -97,6 +97,29 @@ sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames){
     SDL_FreeFormat(format);
     return sprite;
 }
+
+
+drawable_t* drawFromSprite(sprite_t* spr, int x, int y, drawable_t* parent, int layer){
+    drawable_t* ret = malloc(sizeof(*return));
+    ret -> x = x;
+    ret -> y = y;
+    ret -> current_frame = 0;
+    ret -> sprite = spr;
+    if(layer == UI){
+        ret -> parent = NULL;
+    }else if(layer == GAME){
+        ret -> parent = parent;
+    } else {
+        return NULL;
+    }
+    return ret;
+}
+
+void freeSprite(sprite_t* sprite){
+    SDL_FreeSurface(sprite->surface);
+    free(sprite);
+}
+
 int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 {
     int window_w, window_h;   
