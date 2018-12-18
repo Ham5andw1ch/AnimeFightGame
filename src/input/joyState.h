@@ -20,7 +20,7 @@ typedef struct
 void rebind(int player, enum ButtonName keybind);
 
 void joyInit(void);
-void joyUpdate(void);
+int joyUpdate(void);
 void joyRip(void);
 
 uint8_t* joyState(int player, uint8_t* out);
