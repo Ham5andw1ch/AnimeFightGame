@@ -23,6 +23,8 @@ int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame);
 int fillRect(uint32_t color);
 
 int updateWindow();
+int updateViewport();
+
 void destroyWindow();
 
 #endif

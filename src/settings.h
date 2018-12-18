@@ -10,6 +10,17 @@
 #define FiveLimit 10
 #define FPS 60
 
+// Settings for viewport algorithm
+#define Min_W 1067
+#define Min_H 800
+#define Max_W 1600
+#define Max_H 1200
+#define LeftWall 100
+#define RightWall 2300
+#define FloorY 1500
+#define CamOffset 100
+#define FollowPriority FOLLOW_LOW
+
 #define DefaultKeybinds {           \
     {                               \
         { BIND_HAT, 0, 0, 1 },      \
@@ -54,6 +65,11 @@ enum ButtonName {
     MACRO_AB,
     MACRO_BD,
     MACRO_ABCD
+};
+
+enum Follow {
+    FOLLOW_LOW,
+    FOLLOW_HIGH
 };
 
 #endif
