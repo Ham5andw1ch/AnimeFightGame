@@ -1,6 +1,6 @@
 all: includes main
 
-EXE = test
+EXE = fightgame
 SUBDIRS = src
 
 TOP_DIR := $(shell git rev-parse --show-toplevel)
