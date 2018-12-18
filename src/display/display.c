@@ -12,6 +12,7 @@
 #include "global.h"
 #include "settings.h"
 #include "display.h"
+#include "animage.h"
 
 SDL_Window *window;
 SDL_Surface *game_surface;
@@ -60,6 +61,42 @@ int updateWindow(){
     return SDL_UpdateWindowSurface(window);
 }
 
+sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames){
+    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    uint8_t* pixels = malloc(4* spr->height*spr->width * sizeof(*pixels));
+
+    int depth, pitch;
+    depth = 32;
+    pitch = 4*spr->width;
+    
+    int i =0;
+    //Fill pixels with the actual sprite data
+    for(int row = 0; row < spr->height; ++row)
+    {	
+        for(int col = 0; col < spr->width; ++col)
+        {
+            uint8_t r,g,b,a;
+            r = pal->srgb[spr->colors[row * spr->width + col].color].red;
+            g = pal->srgb[spr->colors[row * spr->width + col].color].green;
+            b = pal->srgb[spr->colors[row * spr->width + col].color].blue;
+            a = spr->colors[row * spr->width + col].alpha;
+            pixels[i] =r;
+            pixels[i+1] =g;
+            pixels[i+2] =b;
+            pixels[i+3] =a;
+//          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+	    i+=4;
+        }
+    }
+    
+    SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    sprite_t* sprite = malloc(sizeof(*sprite));
+    sprite->frames = num_frames;
+    sprite->SDL_Surface = surface;
+    free(pixels);
+    SDL_FreeFormat(format);
+    return sprite;
+}
 int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 {
     int window_w, window_h;   

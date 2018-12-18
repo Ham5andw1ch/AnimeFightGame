@@ -34,7 +34,7 @@ int insertDispNode(disp_node_t* node, disp_node_t* list);
 disp_node_t* removeDispNode(uint64_t id, disp_node_t* list);
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name);
-
+sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames);
 int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame);
 
 int fillRect(uint32_t color);
