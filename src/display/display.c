@@ -54,6 +54,39 @@ int updateWindow(){
     return SDL_UpdateWindowSurface(window);
 }
 
+int insert(disp_node_t* node, disp_node_t* list){
+    disp_node_t** pointer = &list;
+    uint_fast8_t done = 0;
+    while(!done){
+        if(*pointer == NULL){
+            *pointer = node;
+            done = 1;
+        }else if(node->z_index <= (*pointer)->z_index){
+            node->next = (*pointer);
+            (*pointer) = node;
+            done = 1;
+        }else{
+            pointer = (*pointer)->next;
+        }
+    }
+}
+
+disp_node_t* remove(uint64_t id){
+    disp_node_t** pointer = &list;
+    while(true){
+        if(*pointer == NULL){
+            return NULL;
+        }else if((*pointer)->id == id){
+            disp_node_t* old= (*pointer);
+            (*pointer) = (*pointer)->next;
+            old->next = NULL;
+            return old;
+        }else{
+            pointer = (*pointer)->next;
+        }
+    }
+}
+
 void destroyWindow(){
    SDL_DestroyWindow(window);
 }
