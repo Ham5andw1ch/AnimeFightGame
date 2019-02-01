@@ -3,8 +3,8 @@
 
 uint64_t accumulator;
 enum layer{ 
-    UI;
-    GAME;
+    UI,
+    GAME
 }
 typedef struct{
     uint8_t frames;
