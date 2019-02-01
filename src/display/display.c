@@ -20,7 +20,18 @@ SDL_Surface *ui_surface;
 
 SDL_Rect viewport;
 // used as a base case for recursive relative position calculation
-drawable_t treeRoot = { 0, 0, 0, 0, 0, 1, NULL, NULL };
+drawable_t treeRoot = {
+    0, // x
+    0, // y
+    0, // z_index
+    0, // current_frame
+    0, // cached_x
+    0, // cached_y
+    1, // calculated
+    NULL, // sprite
+    NULL, // parent
+    GAME  // layer
+};
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
     window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, 0);
@@ -61,7 +72,7 @@ int updateWindow(){
     return SDL_UpdateWindowSurface(window);
 }
 
-sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames){
+sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
     uint8_t* pixels = malloc(4* spr->height*spr->width * sizeof(*pixels));
 
@@ -92,23 +103,29 @@ sprite_t* createSprite(struct sprite* spr, struct pallete* pal, int num_frames){
     SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, format->Rmask, format->Gmask, format->Bmask, format->Amask);
     sprite_t* sprite = malloc(sizeof(*sprite));
     sprite->frames = num_frames;
-    sprite->SDL_Surface = surface;
+    sprite->surface = surface;
     free(pixels);
     SDL_FreeFormat(format);
     return sprite;
 }
 
 
-drawable_t* drawFromSprite(sprite_t* spr, int x, int y, drawable_t* parent, int layer){
-    drawable_t* ret = malloc(sizeof(*return));
+drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, drawable_t* parent, int layer){
+    drawable_t* ret = malloc(sizeof(*ret));
     ret -> x = x;
     ret -> y = y;
+    ret -> z_index = z_ind;
     ret -> current_frame = 0;
     ret -> sprite = spr;
     if(layer == UI){
         ret -> parent = NULL;
+        insertDispNode(ret, &ui_displayables);
     }else if(layer == GAME){
-        ret -> parent = parent;
+        if(parent == NULL)
+            ret -> parent = &treeRoot;
+        else
+            ret -> parent = parent;
+        insertDispNode(ret, &game_displayables);
     } else {
         return NULL;
     }
@@ -173,6 +190,7 @@ void absolutePos(drawable_t* drawable, int* x, int* y)
 
 void drawGame()
 {
+    dbgprint("Entered drawGame()\n");
     // iterate through the game displayables, calculating their absolute position and blitting them
     // to the game surface
     for(disp_node_t* node = game_displayables; node != NULL; node = node->next)
@@ -180,6 +198,7 @@ void drawGame()
         int x, y;
         absolutePos(node->drawable, &x, &y);
         blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame);
+        dbgprint("Draw sprite at (%d, %d) on frame %d\n", x, y, node->drawable->current_frame);
     }
 
     // reset the calculated bit for the next frame
@@ -200,14 +219,20 @@ void drawUI()
     }
 }
 
-int insertDispNode(disp_node_t* node, disp_node_t* list){
-    disp_node_t** pointer = &list;
+// Returns the id of the inserted drawable node
+int insertDispNode(drawable_t* draw, disp_node_t** list){
+    dbgprint("Entered insertDispNode()\n");
+    disp_node_t** pointer = list;
+    disp_node_t* node = malloc(sizeof(*node));
+    node->id = id_acc++;
+    node->drawable = draw;
+    node->next = NULL;
     uint_fast8_t done = 0;
     while(!done){
         if(*pointer == NULL){
             *pointer = node;
             done = 1;
-        }else if(node->z_index <= (*pointer)->z_index){
+        }else if(node->drawable->z_index <= (*pointer)->drawable->z_index){
             node->next = (*pointer);
             (*pointer) = node;
             done = 1;
@@ -215,19 +240,21 @@ int insertDispNode(disp_node_t* node, disp_node_t* list){
             pointer = &(*pointer)->next;
         }
     }
-    return 0;
+    return node->id;
 }
 
-disp_node_t* removeDispNode(uint64_t id, disp_node_t* list){
-    disp_node_t** pointer = &list;
+// remove the node with the id
+drawable_t* removeDispNode(uint64_t id, disp_node_t** list){
+    disp_node_t** pointer = list;
     while(true){
         if(*pointer == NULL){
             return NULL;
         }else if((*pointer)->id == id){
             disp_node_t* old= (*pointer);
             (*pointer) = (*pointer)->next;
-            old->next = NULL;
-            return old;
+            drawable_t* out = old->drawable;
+            free(old);
+            return out;
         }else{
             pointer = &(*pointer)->next;
         }
