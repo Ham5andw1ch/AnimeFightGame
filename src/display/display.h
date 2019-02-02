@@ -39,6 +39,7 @@ disp_node_t* ui_displayables;
 int insertDispNode(drawable_t* node, disp_node_t** list);
 drawable_t* removeDispNode(uint64_t id, disp_node_t** list);
 
+int initDisplay();
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name);
 sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames);
 drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, drawable_t* parent, int layer);

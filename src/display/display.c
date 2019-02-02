@@ -33,8 +33,18 @@ drawable_t treeRoot = {
     GAME  // layer
 };
 
+int initDisplay()
+{
+    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    game_surface = SDL_CreateRGBSurface(0, Game_W, Game_H, 32, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    int win_w, win_h;
+    SDL_GetWindowSize(window, &win_w, &win_h);
+    ui_surface = SDL_CreateRGBSurface(0, win_w, win_h, 32, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    return 0;
+}
+
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
-    window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, 0);
+    window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, SDL_WINDOW_FULLSCREEN);
     return window;
 }
 
@@ -67,8 +77,10 @@ int updateWindow(){
     rect.y=0;
     rect.w=window_surface->w;
     rect.h=window_surface->h;
-    SDL_BlitSurface(game_surface, &rect, window_surface, &rect);
-    SDL_BlitSurface(ui_surface, &rect, window_surface, &rect);
+    if(SDL_BlitSurface(game_surface, &rect, window_surface, &rect))
+        errprint("%s\n", SDL_GetError());
+    if(SDL_BlitSurface(ui_surface, &rect, window_surface, &rect))
+        errprint("%s\n", SDL_GetError());
     return SDL_UpdateWindowSurface(window);
 }
 
@@ -197,7 +209,8 @@ void drawGame()
     {
         int x, y;
         absolutePos(node->drawable, &x, &y);
-        blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame);
+        if(blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame))
+            errprint("%s\n", SDL_GetError());
         dbgprint("Draw sprite at (%d, %d) on frame %d\n", x, y, node->drawable->current_frame);
     }
 

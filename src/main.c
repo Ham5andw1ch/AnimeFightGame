@@ -84,6 +84,7 @@ int initialize(void)
         return ret;
     }
     makeWindow(bounds.w, bounds.h, "Fight Game");
+    initDisplay();
     P1.x = 300; P1.y = 300;
     return 0;
 }

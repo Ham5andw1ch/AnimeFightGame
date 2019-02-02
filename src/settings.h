@@ -10,6 +10,9 @@
 #define FiveLimit 10
 #define FPS 60
 
+#define Game_W 2400
+#define Game_H 1600
+
 // Settings for viewport algorithm
 #define Min_W 1067
 #define Min_H 800
