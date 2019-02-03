@@ -17,6 +17,7 @@
 SDL_Window *window;
 SDL_Surface *game_surface;
 SDL_Surface *ui_surface;
+SDL_PixelFormat* pix_format;
 
 SDL_Rect viewport;
 // used as a base case for recursive relative position calculation
@@ -35,11 +36,16 @@ drawable_t treeRoot = {
 
 int initDisplay()
 {
-    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-    game_surface = SDL_CreateRGBSurface(0, Game_W, Game_H, 32, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    pix_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    game_surface = SDL_CreateRGBSurface(0, Game_W, Game_H, 32, pix_format->Rmask, pix_format->Gmask, pix_format->Bmask, pix_format->Amask);
     int win_w, win_h;
     SDL_GetWindowSize(window, &win_w, &win_h);
-    ui_surface = SDL_CreateRGBSurface(0, win_w, win_h, 32, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    ui_surface = SDL_CreateRGBSurface(0, win_w, win_h, 32, pix_format->Rmask, pix_format->Gmask, pix_format->Bmask, pix_format->Amask);
+
+    // Fix alpha blending
+    SDL_SetSurfaceBlendMode(game_surface, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceBlendMode(ui_surface, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceBlendMode(SDL_GetWindowSurface(window), SDL_BLENDMODE_BLEND);
     return 0;
 }
 
@@ -77,15 +83,18 @@ int updateWindow(){
     rect.y=0;
     rect.w=window_surface->w;
     rect.h=window_surface->h;
-    if(SDL_BlitSurface(game_surface, &rect, window_surface, &rect))
+
+    SDL_FillRect(window_surface, NULL, SDL_MapRGBA(pix_format, 100, 149, 237, 255));
+
+    if(SDL_BlitSurface(game_surface, NULL, window_surface, NULL))
         errprint("%s\n", SDL_GetError());
-    if(SDL_BlitSurface(ui_surface, &rect, window_surface, &rect))
+    if(SDL_BlitSurface(ui_surface, NULL, window_surface, NULL))
         errprint("%s\n", SDL_GetError());
     return SDL_UpdateWindowSurface(window);
 }
 
 sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
-    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    dbgprint("createSprite() called with size (%d, %d) and %d frames\n", spr->width, spr->height, num_frames);
     uint8_t* pixels = malloc(4* spr->height*spr->width * sizeof(*pixels));
 
     int depth, pitch;
@@ -112,12 +121,11 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
         }
     }
     
-    SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, pix_format->Rmask, pix_format->Gmask, pix_format->Bmask, pix_format->Amask);
     sprite_t* sprite = malloc(sizeof(*sprite));
     sprite->frames = num_frames;
     sprite->surface = surface;
-    free(pixels);
-    SDL_FreeFormat(format);
+    dbgprint("Created Sprite of size (%d, %d) with pixel data at 0x%x\n", surface->w, surface->h, surface->pixels);
     return sprite;
 }
 
@@ -203,6 +211,9 @@ void absolutePos(drawable_t* drawable, int* x, int* y)
 void drawGame()
 {
     dbgprint("Entered drawGame()\n");
+    
+    // Clear the Surface with a neutral background color
+    SDL_FillRect(game_surface, NULL, SDL_MapRGBA(pix_format, 100, 149, 237, 255));
     // iterate through the game displayables, calculating their absolute position and blitting them
     // to the game surface
     for(disp_node_t* node = game_displayables; node != NULL; node = node->next)
@@ -223,6 +234,9 @@ void drawGame()
 
 void drawUI()
 {
+    SDL_LockSurface(ui_surface);
+    SDL_memset(ui_surface->pixels, 0, ui_surface->h * ui_surface->pitch);
+    SDL_UnlockSurface(ui_surface);
     for(disp_node_t* node = ui_displayables; node != NULL; node = node->next)
     {
         SDL_Rect pos;
