@@ -1,6 +1,6 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
-
+#include <stdint.h>
 #ifdef DEBUG_
     #ifndef PERR_
         #define PERR_
