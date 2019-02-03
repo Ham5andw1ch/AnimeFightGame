@@ -22,6 +22,7 @@ SDL_Rect P1, P2;
 //TODO: SHITTY CODE
 drawable_t* back_d;
 drawable_t* ryu_d;
+drawable_t* ryu2_d;
 drawable_t* fire_d;
 drawable_t* ui_d;
 //END SHITTY CODE
@@ -48,7 +49,7 @@ int game_loop(void)
     }
 
     // Drawing
-    ret = updateViewport(&P1, &P1);
+    ret = updateViewport(&P1, &P2);
     if(ret)
     {
         errprint("Update Viewport Function returned %d\n", ret);
@@ -129,8 +130,9 @@ int main(int argc, char** argv)
 
     back_d = drawFromSprite(back, 0, 0, 0, NULL, GAME);
     ryu_d = drawFromSprite(ryu, 100, 100, 1, NULL, GAME);
+    ryu2_d = drawFromSprite(ryu, 300, 100, 1, NULL, GAME);
     fire_d = drawFromSprite(fire, 300, 200, 2, ryu_d, GAME);
-    ui_d = drawFromSprite(ui, 100, 100, 0, NULL, UI);
+    ui_d = drawFromSprite(ui, 500, 500, 0, NULL, UI);
     //END TODO
 
     while(ret == 0)
@@ -162,7 +164,15 @@ int main(int argc, char** argv)
 
 int testScene(void)
 {
+    ryu_d->x++;
+    ryu2_d->y++;
     P1.x = ryu_d->x;
     P1.y = ryu_d->y;
+    P1.w = ryu_d->sprite->surface->w / ryu_d->sprite->frames;
+    P1.h = ryu_d->sprite->surface->h;
+    P2.x = ryu2_d->x;
+    P2.y = ryu2_d->y;
+    P2.w = ryu2_d->sprite->surface->w / ryu2_d->sprite->frames;
+    P2.h = ryu2_d->sprite->surface->h;
     return 0;
 }

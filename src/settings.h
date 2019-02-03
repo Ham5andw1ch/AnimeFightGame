@@ -14,8 +14,8 @@
 #define Game_H 1600
 
 // Settings for viewport algorithm
-#define Min_W 1067
-#define Min_H 800
+#define Min_W 0
+#define Min_H 0
 #define Max_W 1600
 #define Max_H 1200
 #define LeftWall 100

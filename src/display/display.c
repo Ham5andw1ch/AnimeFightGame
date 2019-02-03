@@ -78,15 +78,10 @@ int fillRect(uint32_t color){
 
 int updateWindow(){
     SDL_Surface *window_surface = SDL_GetWindowSurface(window);
-    SDL_Rect rect;
-    rect.x=0;
-    rect.y=0;
-    rect.w=window_surface->w;
-    rect.h=window_surface->h;
 
     SDL_FillRect(window_surface, NULL, SDL_MapRGBA(pix_format, 100, 149, 237, 255));
 
-    if(SDL_BlitSurface(game_surface, NULL, window_surface, NULL))
+    if(SDL_BlitScaled(game_surface, &viewport, window_surface, NULL))
         errprint("%s\n", SDL_GetError());
     if(SDL_BlitSurface(ui_surface, NULL, window_surface, NULL))
         errprint("%s\n", SDL_GetError());
@@ -159,21 +154,28 @@ void freeSprite(sprite_t* sprite){
 
 int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 {
+    dbgprint("updateViewport({%d,%d,%d,%d}, {%d,%d,%d,%d})\n", p1->x, p1->y, p1->w, p1->h,
+            p2->x, p2->y, p2->w, p2->h);
     int window_w, window_h;   
     SDL_GetWindowSize(window, &window_w, &window_h);
+    dbgprint("window_w = %d; window_h = %d\n", window_w, window_h);
     double k = (double)window_w / (double)window_h;
+    dbgprint("k = %lf\n", k);
     int dx = abs(p1->x - p2->x);
     int dy = abs(p1->y - p2->y);
     int mx = ((2 * p1->x + p1->w) + (2 * p2->x + p2->w)) / 4;
-    int my = ((2 * p1->y + p1->h) + (2 * p2->y + p2->y)) / 4;
+    int my = ((2 * p1->y + p1->h) + (2 * p2->y + p2->h)) / 4;
     int w = min(min(max(max(dx + 2 * CamOffset, k * (dy + 2 * CamOffset)), Min_W), Max_W), k * Max_H);
     int h = min(min(max(max(dy + 2 * CamOffset, (1.0 / k) * (dx + 2 * CamOffset)), Min_H), Max_H), (1.0 / k) * Max_W);
+    dbgprint("dx = %d; dy = %d\nmx = %d; my = %d\nw = %d; h = %d\n", dx, dy, mx, my, w, h);
 
     int y = 0;
     if(FollowPriority == FOLLOW_LOW)
-        y = min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h;
+    //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
+        y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H) - h, 0);
     else
-        y = max(min(p1->y, p2->y), 0);
+        y = min(max(min(p1->y, p2->y), 0), FloorY);
+    dbgprint("y = %d\n", y);
 
     int x = 0;
     if(2 * mx - w < 2 * (LeftWall - CamOffset))
@@ -182,7 +184,9 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
         x = RightWall + CamOffset - w;
     else
         x = mx - (w / 2);
+    dbgprint("x = %d\n", x);
     
+    dbgprint("Calculated rectangle: (%d, %d, %d, %d)\n", x, y, w, h);
     dbgprint("Real Aspect Ratio: %lf, Calculated Aspect Ratio: %lf\n", k, (double)w / (double)h);
     viewport.x = x;
     viewport.y = y;
