@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "SDL2/SDL.h"
+
 #include "global.h"
 #include "settings.h"
 #include "joyState.h"
@@ -124,8 +126,8 @@ int main(int argc, char** argv)
     readPalette(argv[8], ui_pal);
 
     sprite_t* back = createSprite(back_spr, back_pal, 1);
-    sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 10);
-    sprite_t* fire = createSprite(fire_spr, fire_pal, 39);
+    sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 1);
+    sprite_t* fire = createSprite(fire_spr, fire_pal, 1);
     sprite_t* ui = createSprite(ui_spr, ui_pal, 1);
 
     back_d = drawFromSprite(back, 0, 0, 0, NULL, GAME);
