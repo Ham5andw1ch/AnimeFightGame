@@ -6,8 +6,8 @@ A 2D fighting game with engine written in C using SDL.
 - Controller hotswapping
 - GPU accelerated rendering
 - Windows, Mac, and Linux support
-- Animage: A custom image format designed for easy pallete swapping at loadtime
-- Anpalette:A swappable palette system that works in tandem with animage
+- Animage: A custom image format designed for easy palette swapping at loadtime
+- Anpalette: A swappable palette system that works in tandem with animage
 
 ## TODO
 
