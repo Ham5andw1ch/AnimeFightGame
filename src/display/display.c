@@ -24,10 +24,11 @@ SDL_Rect viewport;
 drawable_t treeRoot = {
     0, // x
     0, // y
+    0, // flipped
     0, // z_index
     0, // current_frame
     0, // cached_x
-    0, // cached_y
+    0,// cached_y
     1, // calculated
     NULL, // sprite
     NULL, // parent
@@ -54,22 +55,34 @@ SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
     return window;
 }
 
-int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame){
+int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t flag){
     SDL_Rect srcRect, destRect;
-    //Grab the frame of the sprite
-    srcRect.x = ((src->surface->w)/src->frames)*frame;
-    srcRect.y = 0;
-    srcRect.w = (src->surface->w)/src->frames;
-    srcRect.h = (src->surface->h);
 
-    //Grab the frame of the window
-    destRect.x = x;
-    destRect.y = y;
-    destRect.w = (src->surface->w)/src->frames;
-    destRect.h = (src->surface->h);
-    
-    //Blit the final surface
-    return SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect);
+
+    for(int i = 0; i < (src->surface->w)/src->frames; i++){
+
+        //Grab the frame of the sprite
+        srcRect.x = (((src->surface->w)/src->frames)*frame)+i;
+        srcRect.y = 0;
+        srcRect.w = 1;
+        srcRect.h = (src->surface->h);
+
+        if(flag){           
+            //Grab the frame of the window
+            destRect.x = x+(src->surface->w)/src->frames-i;
+            destRect.y = y;
+            destRect.w = 1;
+            destRect.h = (src->surface->h);
+        } else {
+            //Grab the frame of the window
+            destRect.x = x+i;
+            destRect.y = y;
+            destRect.w = 1;
+            destRect.h = (src->surface->h);
+        }       
+        //Blit the final surface
+        return SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect);
+    }
 }
 
 int fillRect(uint32_t color){
@@ -95,7 +108,7 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     int depth, pitch;
     depth = 32;
     pitch = 4*spr->width;
-    
+
     int i =0;
     //Fill pixels with the actual sprite data
     for(int row = 0; row < spr->height; ++row)
@@ -111,11 +124,11 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
             pixels[i+1] =g;
             pixels[i+2] =b;
             pixels[i+3] =a;
-//          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
-	    i+=4;
+            //          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+            i+=4;
         }
     }
-    
+
     SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, pix_format->Rmask, pix_format->Gmask, pix_format->Bmask, pix_format->Amask);
     sprite_t* sprite = malloc(sizeof(*sprite));
     sprite->frames = num_frames;
@@ -125,10 +138,11 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
 }
 
 
-drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, drawable_t* parent, int layer){
+drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, uint8_t flipped, drawable_t* parent, int layer){
     drawable_t* ret = malloc(sizeof(*ret));
     ret -> x = x;
     ret -> y = y;
+    ret -> flipped = flipped;
     ret -> z_index = z_ind;
     ret -> current_frame = 0;
     ret -> sprite = spr;
@@ -171,7 +185,7 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 
     int y = 0;
     if(FollowPriority == FOLLOW_LOW)
-    //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
+        //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
         y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H) - h, 0);
     else
         y = min(max(min(p1->y, p2->y), 0), FloorY);
@@ -185,7 +199,7 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     else
         x = mx - (w / 2);
     dbgprint("x = %d\n", x);
-    
+
     dbgprint("Calculated rectangle: (%d, %d, %d, %d)\n", x, y, w, h);
     dbgprint("Real Aspect Ratio: %lf, Calculated Aspect Ratio: %lf\n", k, (double)w / (double)h);
     viewport.x = x;
@@ -215,16 +229,16 @@ void absolutePos(drawable_t* drawable, int* x, int* y)
 void drawGame()
 {
     dbgprint("Entered drawGame()\n");
-    
+
     // Clear the Surface with a neutral background color
     SDL_FillRect(game_surface, NULL, SDL_MapRGBA(pix_format, 100, 149, 237, 255));
     // iterate through the game displayables, calculating their absolute position and blitting them
     // to the game surface
     for(disp_node_t* node = game_displayables; node != NULL; node = node->next)
-    {
+    {   
         int x, y;
         absolutePos(node->drawable, &x, &y);
-        if(blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame))
+        if(blitSprite(node->drawable->sprite, x, y, node->drawable->current_frame, node->drawable->flipped))
             errprint("%s\n", SDL_GetError());
         dbgprint("Draw sprite at (%d, %d) on frame %d\n", x, y, node->drawable->current_frame);
     }
@@ -293,5 +307,5 @@ drawable_t* removeDispNode(uint64_t id, disp_node_t** list){
 }
 
 void destroyWindow(){
-   SDL_DestroyWindow(window);
+    SDL_DestroyWindow(window);
 }

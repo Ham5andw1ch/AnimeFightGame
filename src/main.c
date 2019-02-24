@@ -124,15 +124,15 @@ int main(int argc, char** argv)
     readPalette(argv[8], ui_pal);
 
     sprite_t* back = createSprite(back_spr, back_pal, 1);
-    sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 10);
-    sprite_t* fire = createSprite(fire_spr, fire_pal, 39);
+    sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 1);
+    sprite_t* fire = createSprite(fire_spr, fire_pal, 1);
     sprite_t* ui = createSprite(ui_spr, ui_pal, 1);
 
-    back_d = drawFromSprite(back, 0, 0, 0, NULL, GAME);
-    ryu_d = drawFromSprite(ryu, 100, 100, 1, NULL, GAME);
-    ryu2_d = drawFromSprite(ryu, 300, 100, 1, NULL, GAME);
-    fire_d = drawFromSprite(fire, 300, 200, 2, ryu_d, GAME);
-    ui_d = drawFromSprite(ui, 500, 500, 0, NULL, UI);
+    back_d = drawFromSprite(back, 0, 0, 0, 0, NULL, GAME);
+    ryu_d = drawFromSprite(ryu, 100, 100, 1, 1,  NULL, GAME);
+    ryu2_d = drawFromSprite(ryu, 300, 100, 1, 1, NULL, GAME);
+    fire_d = drawFromSprite(fire, 300, 200, 2, 0, ryu_d, GAME);
+    ui_d = drawFromSprite(ui, 500, 500, 0, 0, NULL, UI);
     //END TODO
 
     while(ret == 0)
