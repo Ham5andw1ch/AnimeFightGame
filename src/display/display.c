@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_pixels.h"
 #include "global.h"
 #include "settings.h"
 #include "display.h"
