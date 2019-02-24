@@ -215,9 +215,9 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     
     if(FollowPriority == FOLLOW_LOW)
         //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
-        y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, h)-h -CamOffset , 0);
+        y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H)-h, 0);
     else
-        y = min(max(min(p1->y, p2->y), 0), h);
+        y = min(max(min(p1->y, p2->y), 0), FloorY);
     dbgprint("y = %d\n", y);
 
     int x = 0;
