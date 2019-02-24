@@ -1,5 +1,19 @@
 # AnimeFightGame
-Scary Auras and Nice Sprites
+A 2D fighting game with engine written in C using SDL. 
+
+## Features
+
+Controller hotswapping
+GPU accelerated rendering
+Windows, Mac, and Linux support
+Animage: A custom image format designed for easy pallete swapping at loadtime
+Anpalette:A swappable palette system that works in tandem with animage
+
+## TODO
+
+Stereo audio
+Simple sample game running in the engine
+Code cleanup
 
 ## Building on Linux
 Install SDL2 with your package manager.
