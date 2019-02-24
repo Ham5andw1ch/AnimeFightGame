@@ -17,6 +17,7 @@ typedef struct{
 typedef struct drawable_t{
     uint16_t x;
     uint16_t y;
+    uint8_t flipped;
     uint8_t z_index;
     uint8_t current_frame;
     uint16_t cached_x;
@@ -42,9 +43,9 @@ drawable_t* removeDispNode(uint64_t id, disp_node_t** list);
 int initDisplay();
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name);
 sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames);
-drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, drawable_t* parent, int layer);
+drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, uint8_t flipped, drawable_t* parent, int layer);
 void freeSprite(sprite_t* sprite);
-int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame);
+int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t flag);
 
 int fillRect(uint32_t color);
 
