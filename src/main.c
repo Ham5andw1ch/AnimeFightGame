@@ -51,6 +51,7 @@ int game_loop(void)
 
     // Drawing
     ret = updateViewport(&P1, &P2);
+    //ret=0;
     if(ret)
     {
         errprint("Update Viewport Function returned %d\n", ret);
@@ -59,11 +60,26 @@ int game_loop(void)
 
     uint8_t* sp1 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp1));
     sp1 = joyState(0, sp1);
+    
+    uint8_t* sp2 = malloc((ButtonCount + MacroCount + 1) * sizeof(*sp2));
+    sp2 = joyState(1, sp2);
+    
     if(sp1[2]==1||sp1[2]==2){
-        ryu_d->x-=5;
+        if(ryu_d->x >0)
+        ryu_d->x-=1;
     }
     if(sp1[3]==1||sp1[3]==2){
-        ryu_d->x+=5;
+        if(ryu_d->x + ryu_d->sprite->surface->w < 2400)
+        ryu_d->x+=1;
+    }
+
+    if(sp2[2]==1||sp2[2]==2){
+        if(ryu2_d->x >0)
+        ryu2_d->x-=1;
+    }
+    if(sp2[3]==1||sp2[3]==2){
+        if(ryu2_d->x + ryu2_d->sprite->surface->w < 2400)
+        ryu2_d->x+=1;
     }
     drawGame();
     drawUI();
@@ -128,7 +144,7 @@ int main(int argc, char** argv)
     sprite_t* back = createSprite(back_spr, back_pal, 1);
     sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 1);
 
-    back_d = drawFromSprite(back, 0, 0, 0, 2, NULL, GAME);
+    back_d = drawFromSprite(back, 0, 0, 0, 0, NULL, GAME);
     ryu_d = drawFromSprite(ryu, 1300, 900, 1, 0,  NULL, GAME);
     ryu2_d = drawFromSprite(ryu, 900, 900, 1, 1, NULL, GAME);
     //END TODO
@@ -138,7 +154,6 @@ int main(int argc, char** argv)
         LAST = SDL_GetPerformanceCounter();
         ret = game_loop();
         NOW = SDL_GetPerformanceCounter();
-        printf("%d\n",SDL_GetPerformanceFrequency());
     }
     if(ret != -1)
         return ret;
