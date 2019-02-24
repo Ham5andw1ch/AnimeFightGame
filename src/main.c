@@ -10,7 +10,8 @@
 #include "display.h"
 
 #include "animage.h"
-
+Uint64 NOW = 0;
+Uint64 LAST = 0;
 typedef int (*upfunc_t)(void);
 
 int testScene(void);
@@ -127,14 +128,17 @@ int main(int argc, char** argv)
     sprite_t* back = createSprite(back_spr, back_pal, 1);
     sprite_t* ryu = createSprite(ryu_spr, ryu_pal, 1);
 
-    back_d = drawFromSprite(back, 0, 0, 0, 0, NULL, GAME);
+    back_d = drawFromSprite(back, 0, 0, 0, 2, NULL, GAME);
     ryu_d = drawFromSprite(ryu, 1300, 900, 1, 0,  NULL, GAME);
     ryu2_d = drawFromSprite(ryu, 900, 900, 1, 1, NULL, GAME);
     //END TODO
 
     while(ret == 0)
     {
+        LAST = SDL_GetPerformanceCounter();
         ret = game_loop();
+        NOW = SDL_GetPerformanceCounter();
+        printf("%d\n",SDL_GetPerformanceFrequency());
     }
     if(ret != -1)
         return ret;
@@ -156,7 +160,7 @@ int main(int argc, char** argv)
 int testScene(void)
 {
     //ryu_d->x++;
-    ryu2_d->y--;
+    //ryu2_d->y--;
     P1.x = ryu_d->x;
     P1.y = ryu_d->y;
     P1.w = ryu_d->sprite->surface->w / ryu_d->sprite->frames;

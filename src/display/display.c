@@ -52,39 +52,55 @@ int initDisplay()
 }
 
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
-    window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, SDL_WINDOW_FULLSCREEN);
+    window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
     return window;
 }
 
 int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t flag){
     SDL_Rect srcRect, destRect;
 
-
-    for(int i = 0; i < (src->surface->w)/src->frames; i++){
-
-        //Grab the frame of the sprite
-        srcRect.x = (((src->surface->w)/src->frames)*frame)+i;
-        srcRect.y = 0;
-        srcRect.w = 1;
-        srcRect.h = (src->surface->h);
-
-        if(flag){           
-            //Grab the frame of the window
-            destRect.x = x+(src->surface->w)/src->frames-1-i;
-            destRect.y = y;
-            destRect.w = 1;
-            destRect.h = (src->surface->h);
-        } else {
-            //Grab the frame of the window
-            destRect.x = x+i;
-            destRect.y = y;
-            destRect.w = 1;
-            destRect.h = (src->surface->h);
-        }       
-        //Blit the final surface
-        if(SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect)){
-            return 1;
+    if(flag!=2){
+        for(int i = 0; i < (src->surface->w)/src->frames; i++){
+    
+            //Grab the frame of the sprite
+            srcRect.x = (((src->surface->w)/src->frames)*frame)+i;
+            srcRect.y = 0;
+            srcRect.w = 1;
+            srcRect.h = (src->surface->h);
+    
+            if(flag==1){           
+                //Grab the frame of the window
+                destRect.x = x+(src->surface->w)/src->frames-1-i;
+                destRect.y = y;
+                destRect.w = 1;
+                destRect.h = (src->surface->h);
+            } else if(flag==0) {
+                //Grab the frame of the window
+                destRect.x = x+i;
+                destRect.y = y;
+                destRect.w = 1;
+                destRect.h = (src->surface->h);
+            } 
+            //Blit the final surface
+                if(SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect)){
+                return 1;
+            }
         }
+    }
+    else {
+        srcRect.x = ((src->surface->w)/src->frames)*frame;
+        srcRect.y = 0;
+        srcRect.w = (src->surface->w)/src->frames;
+        srcRect.h = (src->surface->h);
+    
+        //Grab the frame of the window
+        destRect.x = x;
+        destRect.y = y;
+        destRect.w = (src->surface->w)/src->frames;
+        destRect.h = (src->surface->h);
+        
+        //Blit the final surface
+        return SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect);
     }
     return 0;
 
@@ -199,9 +215,9 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     
     if(FollowPriority == FOLLOW_LOW)
         //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
-        y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H) - h, 0);
+        y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, h)-h -CamOffset , 0);
     else
-        y = min(max(min(p1->y, p2->y), 0), FloorY);
+        y = min(max(min(p1->y, p2->y), 0), h);
     dbgprint("y = %d\n", y);
 
     int x = 0;

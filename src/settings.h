@@ -21,7 +21,7 @@
 #define RightWall 2300
 #define FloorY 1500
 #define CamOffset 100
-#define FollowPriority FOLLOW_HIGH
+#define FollowPriority FOLLOW_LOW
 
 #define DefaultKeybinds {           \
     {                               \
