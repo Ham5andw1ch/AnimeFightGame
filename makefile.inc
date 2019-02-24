@@ -3,8 +3,9 @@ WORKDIR = $(TOP_DIR)
 OBJ_DIR = $(WORKDIR)/build
 INC_DIR = $(WORKDIR)/include
 
-CFLAGS = -g -I$(INC_DIR) 
+CFLAGS = -g -I$(INC_DIR)
 #-DDEBUG_
+
 LFLAGS = -lm
 
 ifeq ($(OS),Windows_NT)

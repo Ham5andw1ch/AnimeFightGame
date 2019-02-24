@@ -11,7 +11,10 @@ enum layer{
 
 typedef struct{
     uint8_t frames;
+    int w;
+    int h;
     SDL_Surface* surface;
+    SDL_Texture* texture;
 }sprite_t;
 
 typedef struct drawable_t{
@@ -47,7 +50,7 @@ drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, uint8_t flipp
 void freeSprite(sprite_t* sprite);
 int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t flag);
 
-int fillRect(uint32_t color);
+//int fillRect(uint32_t color);
 
 int updateWindow(void);
 int updateViewport(SDL_Rect* p1, SDL_Rect* p2);
