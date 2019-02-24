@@ -70,7 +70,7 @@ int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t fla
 
         if(flag){           
             //Grab the frame of the window
-            destRect.x = x+(src->surface->w)/src->frames-i;
+            destRect.x = x+(src->surface->w)/src->frames-1-i;
             destRect.y = y;
             destRect.w = 1;
             destRect.h = (src->surface->h);
@@ -82,8 +82,12 @@ int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t fla
             destRect.h = (src->surface->h);
         }       
         //Blit the final surface
-        return SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect);
+        if(SDL_BlitSurface(src->surface, &srcRect, game_surface, &destRect)){
+            return 1;
+        }
     }
+    return 0;
+
 }
 
 int fillRect(uint32_t color){
