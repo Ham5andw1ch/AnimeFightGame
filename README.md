@@ -1,7 +1,6 @@
 # AnimeFightGame
 Scary Auras and Nice Sprites
 
---
 ## Building on Linux
 Install SDL2 with your package manager.
 

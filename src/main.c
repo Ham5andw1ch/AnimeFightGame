@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 
     back_d = drawFromSprite(back, 0, 0, 0, 0, NULL, GAME);
     ryu_d = drawFromSprite(ryu, 100, 100, 1, 1,  NULL, GAME);
-    ryu2_d = drawFromSprite(ryu, 300, 100, 1, 1, NULL, GAME);
+    ryu2_d = drawFromSprite(ryu, 300, 100, 1, 0, NULL, GAME);
     fire_d = drawFromSprite(fire, 300, 200, 2, 0, ryu_d, GAME);
     ui_d = drawFromSprite(ui, 500, 500, 0, 0, NULL, UI);
     //END TODO
