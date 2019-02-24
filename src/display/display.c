@@ -175,20 +175,28 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 {
     dbgprint("updateViewport({%d,%d,%d,%d}, {%d,%d,%d,%d})\n", p1->x, p1->y, p1->w, p1->h,
             p2->x, p2->y, p2->w, p2->h);
+
     int window_w, window_h;   
     SDL_GetWindowSize(window, &window_w, &window_h);
+    
     dbgprint("window_w = %d; window_h = %d\n", window_w, window_h);
+    
     double k = (double)window_w / (double)window_h;
     dbgprint("k = %lf\n", k);
-    int dx = abs(p1->x - p2->x);
+    
+    int dx = max((p2->x - p1->x + p2->w), (p1->x - p2->x + p1->w));
     int dy = abs(p1->y - p2->y);
+    
     int mx = ((2 * p1->x + p1->w) + (2 * p2->x + p2->w)) / 4;
     int my = ((2 * p1->y + p1->h) + (2 * p2->y + p2->h)) / 4;
-    int w = min(min(max(max(dx + 2 * CamOffset, k * (dy + 2 * CamOffset)), Min_W), Max_W), k * Max_H);
-    int h = min(min(max(max(dy + 2 * CamOffset, (1.0 / k) * (dx + 2 * CamOffset)), Min_H), Max_H), (1.0 / k) * Max_W);
+    
+    int w = max(Min_W, (dx+(2*CamOffset)));
+    int h = ((double)w/(double)window_w)*window_h;
+    
     dbgprint("dx = %d; dy = %d\nmx = %d; my = %d\nw = %d; h = %d\n", dx, dy, mx, my, w, h);
 
     int y = 0;
+    
     if(FollowPriority == FOLLOW_LOW)
         //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
         y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H) - h, 0);

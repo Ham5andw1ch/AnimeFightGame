@@ -12,17 +12,16 @@
 
 #define Game_W 2400
 #define Game_H 1600
-
 // Settings for viewport algorithm
-#define Min_W 100
-#define Min_H 100
-#define Max_W 1600
-#define Max_H 1200
+#define Min_W 1200
+#define Min_H 800
+#define Max_W 2400
+#define Max_H 1600
 #define LeftWall 100
 #define RightWall 2300
 #define FloorY 1500
 #define CamOffset 100
-#define FollowPriority FOLLOW_LOW
+#define FollowPriority FOLLOW_HIGH
 
 #define DefaultKeybinds {           \
     {                               \
