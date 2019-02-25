@@ -66,20 +66,20 @@ int game_loop(void)
     
     if(sp1[2]==1||sp1[2]==2){
         if(ryu_d->x >0)
-        ryu_d->x-=1;
+        ryu_d->x-=5;
     }
     if(sp1[3]==1||sp1[3]==2){
         if(ryu_d->x + ryu_d->sprite->surface->w < 2400)
-        ryu_d->x+=1;
+        ryu_d->x+=5;
     }
 
     if(sp2[2]==1||sp2[2]==2){
         if(ryu2_d->x >0)
-        ryu2_d->x-=1;
+        ryu2_d->x-=5;
     }
     if(sp2[3]==1||sp2[3]==2){
         if(ryu2_d->x + ryu2_d->sprite->surface->w < 2400)
-        ryu2_d->x+=1;
+        ryu2_d->x+=5;
     }
     drawGame();
     drawUI();
@@ -148,12 +148,16 @@ int main(int argc, char** argv)
     ryu_d = drawFromSprite(ryu, 1300, 900, 1, 0,  NULL, GAME);
     ryu2_d = drawFromSprite(ryu, 900, 900, 1, 1, NULL, GAME);
     //END TODO
-
+    double deltaTime = 0.0;
     while(ret == 0)
     {
-        LAST = SDL_GetPerformanceCounter();
-        ret = game_loop();
+        LAST = NOW;
         NOW = SDL_GetPerformanceCounter();
+        deltaTime = deltaTime + (double) ((NOW-LAST)*1000/(double)SDL_GetPerformanceFrequency());
+        if( deltaTime * .001 > (double)1/(double) FPS){
+            deltaTime = 0;
+            ret = game_loop();
+        }
     }
     if(ret != -1)
         return ret;
