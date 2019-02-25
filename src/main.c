@@ -29,6 +29,7 @@ drawable_t* ryu_d;
 drawable_t* ryu2_d;
 sound_t* music;
 sound_t* sfx;
+track_t* sfx_track;
 //END SHITTY CODE
 
 int game_loop(void)
@@ -69,20 +70,20 @@ int game_loop(void)
     
     if(sp1[2]==1||sp1[2]==2){
         if(ryu_d->x >0)
-        ryu_d->x-=1;
+        ryu_d->x-=5;
     }
     if(sp1[3]==1||sp1[3]==2){
         if(ryu_d->x + ryu_d->sprite->surface->w < 2400)
-        ryu_d->x+=1;
+        ryu_d->x+=5;
     }
 
     if(sp2[2]==1||sp2[2]==2){
         if(ryu2_d->x >0)
-        ryu2_d->x-=1;
+        ryu2_d->x-=5;
     }
     if(sp2[3]==1||sp2[3]==2){
         if(ryu2_d->x + ryu2_d->sprite->surface->w < 2400)
-        ryu2_d->x+=1;
+        ryu2_d->x+=5;
     }
     drawGame();
     drawUI();
@@ -155,14 +156,20 @@ int main(int argc, char** argv)
 
     music = loadAudio(argv[5]);
     sfx = loadAudio(argv[6]);
-    playMusic(music, 10);
     //END TODO
 
+    double deltaTime = 0.0;
     while(ret == 0)
     {
-        LAST = SDL_GetPerformanceCounter();
-        ret = game_loop();
+        LAST = NOW;
         NOW = SDL_GetPerformanceCounter();
+        deltaTime = deltaTime + (double) ((NOW-LAST) *
+                1000/(double)SDL_GetPerformanceFrequency());
+        if(deltaTime * .001 > (double) 1 / (double) FPS)
+        {
+            deltaTime = 0;
+            ret = game_loop();
+        }
     }
     if(ret != -1)
         return ret;
@@ -187,6 +194,11 @@ int testScene(void)
     //ryu_d->x++;
     //ryu2_d->y--;
     ++frame;
+    if(frame == 0)
+    {
+        playMusic(music, 10);
+        sfx_track = playSound(sfx, 0, 0);
+    }
     P1.x = ryu_d->x;
     P1.y = ryu_d->y;
     P1.w = ryu_d->sprite->surface->w / ryu_d->sprite->frames;
@@ -195,7 +207,6 @@ int testScene(void)
     P2.y = ryu2_d->y;
     P2.w = ryu2_d->sprite->surface->w / ryu2_d->sprite->frames;
     P2.h = ryu2_d->sprite->surface->h;
-    if(frame % 10 == 0)
-        playSound(sfx, frame, 0);
+    sfx_track->x_pos += 5;    
     return 0;
 }

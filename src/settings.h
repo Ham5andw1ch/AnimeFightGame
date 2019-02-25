@@ -13,8 +13,8 @@
 #define Game_W 2400
 #define Game_H 1600
 // Settings for viewport algorithm
-#define Min_W 1200
-#define Min_H 800
+#define Min_W 1800
+#define Min_H 1200
 #define Max_W 2400
 #define Max_H 1600
 #define LeftWall 100
@@ -23,7 +23,7 @@
 #define CamOffset 100
 #define FollowPriority FOLLOW_LOW
 
-#define MasterVolume .5
+#define MasterVolume 1
 #define MusicVolume .5
 #define SfxVolume .5
 #define MaxSfx 20

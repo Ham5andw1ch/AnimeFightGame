@@ -27,6 +27,7 @@ track_t* createTrack(sound_t* sound, double volume)
     track->volume = volume;
     int w;
     SDL_GetWindowSize(window, &w, NULL);
+    dbgprint("w = %d", w);
     track->x_pos = w / 2;
     track->pitchShift = 0;
     track->volShift = 0;
@@ -191,8 +192,11 @@ void updateVolume(track_t** track_p)
         freeTrack(track);
         *track_p = NULL;
     }
-    track->volume += track->volShift;
-    --track->shiftFrames;
+    if(track->shiftFrames > 0)
+    {
+        track->volume += track->volShift;
+        --track->shiftFrames;
+    }
 }
 
 int32_t audLterm(track_t* track)
