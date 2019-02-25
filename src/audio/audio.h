@@ -1,7 +1,7 @@
 #ifndef AUDIO_H_
 #define AUDIO_H_
 
-typedef {
+typedef struct {
     SDL_AudioSpec spec;
     uint8_t* audio_buf;
     uint32_t audio_len;
@@ -9,7 +9,7 @@ typedef {
     uint32_t endLoop;
 } sound_t;
 
-typedef {
+typedef struct {
     sound_t* sound;
     uint32_t seek;
     uint8_t loop;
@@ -25,7 +25,7 @@ typedef {
 // Fades in music over the course of fadein frames, ending the previous music playing
 track_t* playMusic(sound_t* music, int fadein);
 // Plays a sound effect pitchShifted by pitchShift semitones
-track_t* playSound(sound_t* sound, double pitchShift);
+track_t* playSound(sound_t* sound, int x_pos, double pitchShift);
 // Fades out the music over the course of fadeout frames
 void stopMusic(int fadeOut);
 // Fades out the sound effect pointed to by track over the course of fadeOut frames

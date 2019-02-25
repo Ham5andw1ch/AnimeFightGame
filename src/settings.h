@@ -23,6 +23,13 @@
 #define CamOffset 100
 #define FollowPriority FOLLOW_LOW
 
+#define MasterVolume .5
+#define MusicVolume .5
+#define SfxVolume .5
+#define MaxSfx 20
+
+#define AudioFrequency 48000
+
 #define DefaultKeybinds {           \
     {                               \
         { BIND_HAT, 0, 0, 1 },      \

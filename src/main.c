@@ -8,6 +8,7 @@
 #include "joyState.h"
 #include "parse.h"
 #include "display.h"
+#include "audio.h"
 
 #include "animage.h"
 Uint64 NOW = 0;
@@ -26,6 +27,8 @@ SDL_Rect P1, P2;
 drawable_t* back_d;
 drawable_t* ryu_d;
 drawable_t* ryu2_d;
+sound_t* music;
+sound_t* sfx;
 //END SHITTY CODE
 
 int game_loop(void)
@@ -91,6 +94,7 @@ int game_loop(void)
     }
 
     // Audio
+    updateAudio();
     return 0;
 }
 
@@ -113,6 +117,7 @@ int initialize(void)
     makeWindow(bounds.w, bounds.h, "Fight Game");
     initDisplay();
     P1.x = 300; P1.y = 300;
+    initAudio();
     return 0;
 }
 
@@ -147,6 +152,10 @@ int main(int argc, char** argv)
     back_d = drawFromSprite(back, 0, 0, 0, 0, NULL, GAME);
     ryu_d = drawFromSprite(ryu, 1300, 900, 1, 0,  NULL, GAME);
     ryu2_d = drawFromSprite(ryu, 900, 900, 1, 1, NULL, GAME);
+
+    music = loadAudio(argv[5]);
+    sfx = loadAudio(argv[6]);
+    playMusic(music, 10);
     //END TODO
 
     while(ret == 0)
@@ -174,8 +183,10 @@ int main(int argc, char** argv)
 
 int testScene(void)
 {
+    static int frame = -1;
     //ryu_d->x++;
     //ryu2_d->y--;
+    ++frame;
     P1.x = ryu_d->x;
     P1.y = ryu_d->y;
     P1.w = ryu_d->sprite->surface->w / ryu_d->sprite->frames;
@@ -184,5 +195,7 @@ int testScene(void)
     P2.y = ryu2_d->y;
     P2.w = ryu2_d->sprite->surface->w / ryu2_d->sprite->frames;
     P2.h = ryu2_d->sprite->surface->h;
+    if(frame % 10 == 0)
+        playSound(sfx, frame, 0);
     return 0;
 }

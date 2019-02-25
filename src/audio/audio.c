@@ -1,4 +1,5 @@
 #include <math.h>
+#include <limits.h>
 
 #include "SDL2/SDL.h"
 
@@ -10,7 +11,7 @@
 SDL_AudioSpec outSpec;
 SDL_AudioDeviceID outDev;
 
-extern SDL_Window *window;
+SDL_Window *window;
 
 track_t* musicTrack;
 track_t* oldMusic;
@@ -79,7 +80,7 @@ track_t* playSound(sound_t* sound, int x_pos, double pitchShift)
     return track;
 }
 // Fades out the music over the course of fadeout frames
-void stopMusic(int fadeOut);
+void stopMusic(int fadeOut)
 {
     rebalance(musicTrack, -musicTrack->volume, fadeOut);
     musicTrack->end = 1;
@@ -93,11 +94,11 @@ void stopSound(track_t* track, int fadeOut)
 // Cross fades between two sounds over the course of fadeTime frames
 track_t* crossFade(track_t* track, sound_t* newSound, int fadeTime)
 {
-    track_t* newSfx = createTrack(sound, SfxVolume);
+    track_t* newSfx = createTrack(newSound, SfxVolume);
     rebalance(track, -track->volume, fadeTime);
     track->end = 1;
     newSfx->volume = 0.0;
-    rebalance(newSfx->defVol, fadeTime);
+    rebalance(newSfx, newSfx->defVol, fadeTime);
     enqueueSound(newSfx);
     return newSfx;
 }
@@ -109,7 +110,7 @@ track_t* rebalance(track_t* track, double volShift, int transTime)
     return track;
 }
 // resets the balance of a track to default over transTime frames
-track_t* resetBalance(track_t* track, int transTime);
+track_t* resetBalance(track_t* track, int transTime)
 {
     return rebalance(track, track->defVol - track->volume, transTime);
 }
@@ -118,9 +119,9 @@ track_t* resetBalance(track_t* track, int transTime);
 sound_t* loadAudio(char* filename)
 {
     sound_t* audio = malloc(sizeof(*audio));
-    audio->spec = SDL_LoadWAV(filename, &audio->spec, &audio->audio_buf,
+    SDL_AudioSpec* spec = SDL_LoadWAV(filename, &audio->spec, &audio->audio_buf,
             &audio->audio_len);
-    if(audio->spec == NULL)
+    if(spec == NULL)
     {
         free(audio);
         return NULL;
@@ -162,8 +163,8 @@ void freeAudio(sound_t* sound)
     if(sound == NULL)
         return;
 
-    SDL_FreeWAV(audio->audio_buf);
-    free(audio);
+    SDL_FreeWAV(sound->audio_buf);
+    free(sound);
 }
 
 int initAudio(void)
@@ -177,6 +178,7 @@ int initAudio(void)
     want.userdata = NULL;
 
     outDev = SDL_OpenAudioDevice(NULL, 0, &want, &outSpec, 0);
+    SDL_PauseAudioDevice(outDev, 0);
 }
 
 void updateVolume(track_t** track_p)
@@ -195,11 +197,11 @@ void updateVolume(track_t** track_p)
 
 int32_t audLterm(track_t* track)
 {
-    double sinpi_4 = sin(M_PI / 4);
+    double tanpi_4 = tan(M_PI / 4);
     int w;
     SDL_GetWindowSize(window, &w, NULL);
     int x = track->x_pos;
-    double theta = asin((2 * x * sinpi_4) / w - sinpi_4);
+    double theta = atan((2 * x * tanpi_4) / w - tanpi_4);
 
     double Lamp = (sqrt(2.0) / 2.0) * (cos(theta) - sin(theta));
     int32_t value = ((int32_t*)(track->sound->audio_buf))[track->seek];
@@ -208,11 +210,11 @@ int32_t audLterm(track_t* track)
 
 int32_t audRterm(track_t* track)
 {
-    double sinpi_4 = sin(M_PI / 4);
+    double tanpi_4 = tan(M_PI / 4);
     int w;
     SDL_GetWindowSize(window, &w, NULL);
     int x = track->x_pos;
-    double theta = asin((2 * x * sinpi_4) / w - sinpi_4);
+    double theta = atan((2 * x * tanpi_4) / w - tanpi_4);
 
     double Ramp = (sqrt(2.0) / 2.0) * (cos(theta) + sin(theta));
     int32_t value = ((int32_t*)(track->sound->audio_buf))[track->seek];
@@ -272,10 +274,10 @@ void mixAudio(void)
 
 int updateAudio(void)
 {
-    updateVolume(oldMusic);
-    updateVolume(musicTrack);
+    updateVolume(&oldMusic);
+    updateVolume(&musicTrack);
     for(int i = 0; i < MaxSfx; ++i)
-        updateVolume(playingSounds[i]);
+        updateVolume(&playingSounds[i]);
 
     mixAudio();
 }

@@ -1,4 +1,4 @@
-IGNORE = character audio test.o
+IGNORE = character test.o
 
 TOP_DIR := $(shell git rev-parse --show-toplevel)
 include $(TOP_DIR)/makefile.inc
