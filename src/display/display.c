@@ -25,6 +25,7 @@ SDL_Texture *ui_texture;
 SDL_PixelFormat* pix_format;
 
 SDL_Rect viewport;
+
 // used as a base case for recursive relative position calculation
 drawable_t treeRoot = {
     0, // x
@@ -40,6 +41,8 @@ drawable_t treeRoot = {
     GAME  // layer
 };
 
+//Initialized Display Renderer
+//TODO remove the remainder of the surface system logic
 int initDisplay()
 {
     pix_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
@@ -55,56 +58,47 @@ int initDisplay()
     return 0;
 }
 
+//Create an SDL window
 SDL_Window *makeWindow(uint16_t x, uint16_t y, char* name){
     window = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, x, y, SDL_WINDOW_RESIZABLE);
     return window;
 }
 
+//Take a sprite and blit it onto game_renderer. If flag is 1, the sprite will be mirrored. Note, the x and y positions here represent game space and not screen space. Adjust the viewport in order to change where sprites are displayed.
 int blitSprite(sprite_t* src, uint16_t x, uint16_t y, uint8_t frame, uint8_t flag){
+
     SDL_Rect srcRect, destRect;
     SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    //Grab the frame of the sprite
     srcRect.x = ((src->surface->w)/src->frames)*frame;
     srcRect.y = 0;
     srcRect.w = (src->surface->w)/src->frames;
     srcRect.h = (src->surface->h);
     
-    //Grab the frame of the window
+    //Grab the portion of the screen
     destRect.x = x-viewport.x;
     destRect.y = y-viewport.y;
     destRect.w = (src->surface->w)/src->frames;
     destRect.h = (src->surface->h);
-    printf("Flipped?:%i Game X:%i Screen X:%i Game Y:%i Screen Y:%i\n",flag, destRect.x, x, destRect.y, y);    
    
     if(flag){
-        printf("Very cool\n");
        flip = SDL_FLIP_HORIZONTAL;
     } else {
        flip = SDL_FLIP_NONE;
     }
-    printf("New Flipped:%i \n", flip);
+
    //Blit the final surface
    return SDL_RenderCopyEx(game_renderer, src->texture, &srcRect, &destRect, 0, NULL, flip);
-
 }
 
-//int fillRect(uint32_t color){
- //   SDL_SetRenderDrawColor(game_renderer, color);
-  //  return SDL_RenderClear(game_renderer);
-//}
 
+//Refresh the screen
 int updateWindow(){
-    //SDL_Surface *window_surface = SDL_GetWindowSurface(window);
-
-    //SDL_FillRect(window_surface, NULL, SDL_MapRGBA(pix_format, 100, 149, 237, 255));
-
-    //if(SDL_BlitScaled(game_surface, &viewport, window_surface, NULL))
-    //    errprint("%s\n", SDL_GetError());
-    //if(SDL_BlitSurface(ui_surface, NULL, window_surface, NULL))
-    //    errprint("%s\n", SDL_GetError());
     SDL_RenderPresent(game_renderer);
-    //SDL_UpdateWindowSurface(window);
 }
 
+//Create a sprite_t object from an animage sprite and palette.
 sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     dbgprint("createSprite() called with size (%d, %d) and %d frames\n", spr->width, spr->height, num_frames);
     uint8_t* pixels = malloc(4* spr->height*spr->width * sizeof(*pixels));
@@ -114,6 +108,7 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     pitch = 4*spr->width;
 
     int i =0;
+    
     //Fill pixels with the actual sprite data
     for(int row = 0; row < spr->height; ++row)
     {	
@@ -128,7 +123,6 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
             pixels[i+1] =g;
             pixels[i+2] =b;
             pixels[i+3] =a;
-            //          printf("%i %i %i %i\n", pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
             i+=4;
         }
     }
@@ -136,6 +130,7 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, spr->width, spr->height,depth, pitch, pix_format->Rmask, pix_format->Gmask, pix_format->Bmask, pix_format->Amask);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(game_renderer, surface);
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    
     sprite_t* sprite = malloc(sizeof(*sprite));
     sprite->frames = num_frames;
     sprite->texture = texture;
@@ -146,7 +141,7 @@ sprite_t* createSprite(struct sprite* spr, struct palette* pal, int num_frames){
     return sprite;
 }
 
-
+//Given a sprite_t create a drawable_t object to be used with the display hierarchy.
 drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, uint8_t flipped, drawable_t* parent, int layer){
     drawable_t* ret = malloc(sizeof(*ret));
     ret -> x = x;
@@ -171,11 +166,14 @@ drawable_t* drawFromSprite(sprite_t* spr, int x, int y, int z_ind, uint8_t flipp
     return ret;
 }
 
+//Free a sprite_t
 void freeSprite(sprite_t* sprite){
+    SDL_FreeSurface(sprite->surface);
     SDL_DestroyTexture(sprite->texture);
     free(sprite);
 }
 
+//Resize the viewport by scaling the display.
 int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
 {
     dbgprint("updateViewport({%d,%d,%d,%d}, {%d,%d,%d,%d})\n", p1->x, p1->y, p1->w, p1->h,
@@ -203,7 +201,6 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     int y = 0;
     
     if(FollowPriority == FOLLOW_LOW)
-        //  y = max(min(max(p1->y + p1->h, p2->y + p2->h), FloorY) + CamOffset - h, 0);
         y = max(min(max(p1->y + p1->h, p2->y + p2->h) + CamOffset, Game_H)-h  , 0);
     else
         y = min(max(min(p1->y, p2->y), 0), FloorY);
@@ -225,12 +222,12 @@ int updateViewport(SDL_Rect* p1, SDL_Rect* p2)
     viewport.y = y;
     viewport.w = w;
     viewport.h = h;
-    //SDL_RenderSetClipRect(game_renderer, &viewport);
    
     SDL_RenderSetScale(game_renderer, (double)window_w/(double)viewport.w, (double)window_h/(double)viewport.h);
     return 0;
 }
 
+//Given a drawable_t, turn its relative position into an absolute position
 void absolutePos(drawable_t* drawable, int* x, int* y)
 {
     if(drawable->calculated)
@@ -248,6 +245,7 @@ void absolutePos(drawable_t* drawable, int* x, int* y)
     drawable->calculated = 1;
 }
 
+//Draw every sprite in the game
 void drawGame()
 {
     dbgprint("Entered drawGame()\n");
@@ -275,6 +273,7 @@ void drawGame()
     }
 }
 
+//TODO create render code for the UI. UI should ignore display scaling.
 void drawUI()
 {
    // SDL_LockSurface(ui_surface);
@@ -331,6 +330,7 @@ drawable_t* removeDispNode(uint64_t id, disp_node_t** list){
     }
 }
 
+//Kill the window
 void destroyWindow(){
     SDL_DestroyRenderer(game_renderer);
     SDL_DestroyWindow(window);
